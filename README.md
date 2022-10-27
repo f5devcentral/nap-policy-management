@@ -157,13 +157,13 @@ Once the change has been completed, you should be able to select the Support-ID 
 For support, please open a GitHub issue. Note, the code in this repository is community supported and is not supported by F5 Networks.
 
 
-## Community Code of Conduct
+### Community Code of Conduct
 Please refer to the [F5 DevCentral Community Code of Conduct](code_of_conduct.md).
 
-## License
+### License
 [Apache License 2.0](LICENSE)
 
-## Copyright
+### Copyright
 Copyright 2014-2020 F5 Networks Inc.
  
 
