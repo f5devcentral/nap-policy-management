@@ -1,0 +1,1 @@
+{"name": "app_protect_strict_policy", "gitlab":"https://git.f5demo.cloud/k8s/nap", "mode":"blocking", "token":"asdasdasd", "user":"kostas", "owasp":10, "warnings":2}
