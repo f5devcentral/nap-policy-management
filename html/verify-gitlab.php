@@ -155,6 +155,7 @@
 			{
 				$result = json_decode($curl_response, true);
 				$found = "Folder Not Found";
+
 				foreach ($result as $temp_path)
 				{
 					if ($temp_path["path"] == $path)
@@ -199,12 +200,12 @@
 			</div>';
 		exit();
 	}
-
-	if ($path =="-") 
-		$policy_content == "Folder Found";
+	
+	if ($path == "-") 
+		$policy_content = "Folder Found";
 	else
 		$policy_content = get_path($project_name, $token,  $id, $gitlab_fqdn, $path, $branch);
-
+		
 	if ($policy_content == -2)
 	{
 		echo '
