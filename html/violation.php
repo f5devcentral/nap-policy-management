@@ -1183,7 +1183,7 @@
 						 </select>
 					</div>
 
-					<div class="col-md-2 branch form-check" style="text-align:center">
+					<div class="col-md-2 branch form-check" style="text-align:center;" hidden>
 						<label class="form-label" for="branch" style="width:100%; ">Create Branch</label>
 						<input class="" type="checkbox" id="branch" style="height:18px; width:18px; margin-top: 6px;" disabled>
 					</div>					

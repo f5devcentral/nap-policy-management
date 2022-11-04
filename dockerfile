@@ -8,7 +8,7 @@ RUN apt install python3.9 -y
 
 # Install pip
 RUN apt install python3-pip -y
-# RUN python3 -m pip install --upgrade pip
+RUN python3 -m pip install pyyaml
 
 RUN mkdir /etc/fpm/
 RUN chgrp -R www-data /etc/fpm
