@@ -61,7 +61,7 @@
       <link href="dashboard.css" rel="stylesheet">
 
    </head>
-   <body>
+   <body style="min-width: 1280px;">
 			<nav class="navbar navbar-dark bg-dark sticky-top " style="padding:0px 50px 0px 10px;">
 					
 					<a class="navbar-brand" href="#"><img src="images/app-protect.svg" width=32/> &nbsp; NGINX App Protect - False Positive Management</a>
@@ -127,6 +127,7 @@
 															<th> Gitlab FQDN</th>
 															<th style="width: 150px; text-align: center;">Project</th>
 															<th style="width: 150px; text-align: center;">Path</th>
+															<th style="width: 150px; text-align: center;">Format</th>
 															<th style="width: 150px; text-align: center;">Token</th>
 															<th style="width: 100px; text-align: center;">Branch</th>
 															<th style="width: 15px; text-align: center;"></th>
@@ -248,18 +249,24 @@
       		<div class="modal-body">
 
 						<form class="row g-3">
-							<div class="col-md-6 vars">
+							<div class="col-md-5 vars">
 								<label class="form-label">Repo FQDN</label>
 								<input type="text" class="form-control" placeholder="https://www.gitlab.com" id="gitlab_fqdn">
 							</div>
-							<div class="col-md-6 vars">
+							<div class="col-md-4 vars">
 								<label class="form-label">Project</label>
 								<input type="text" class="form-control" placeholder="user/project_name" id="project_name">
 							</div>
-								
+							<div class="col-md-3 vars">
+								<label class="form-label">Format</label>
+								<select class="form-select" id="format">
+									<option value="JSON" selected>JSON</option>
+									<option value="YAML">YAML</option>
+								</select>
+							</div>									
 							<div class="col-md-4 vars">
-								<label class="form-label">Folder</label>
-								<input type="text" class="form-control" placeholder="policies folder" id="path">
+								<label class="form-label">Folder (leave empty for root)</label>
+								<input type="text" class="form-control" placeholder="folder that the policies are stored" id="path">
 							</div>
 
 							<div class="col-md-4">
@@ -306,16 +313,17 @@
 				"info": false,
 				"data": gitlab,
 				"createdRow": function( row, data, dataIndex ) {
-				  $('td', row).eq(3).html("xxxxxxxxxxxxxxx");  
-				  $('td', row).eq(5).html("<i class='fa fa-trash fa-2x' ></i>");  
+				  $('td', row).eq(4).html("xxxxxxxxxxxxxxx");  
+				  $('td', row).eq(6).html("<i class='fa fa-trash fa-2x' ></i>");  
 			  },
         columnDefs: [
-            {target: 6,visible: false,searchable: false,}
+            {target: 7,visible: false,searchable: false,}
         ],				
 				"columns": [
 					{ "className": 'bold',"data": "fqdn" },
 					{ "className": 'attacks',"data": "project" },
 					{ "className": 'attacks',"data": "path" },
+					{ "className": 'attacks',"data": "format" },
 					{ "className": 'attacks',"data": "token" },
 					{ "className": 'attacks',"data": "branch" },
 					{ "className": 'delete_button',"data": null},
@@ -341,7 +349,6 @@
 
 
 <script>
-
 	$( "#save" ).click(function() {
 		var table = $('#gitlab').DataTable();
 		var payload = "["
@@ -350,14 +357,19 @@
 			var fqdn = table.cell( i, 0).data();
 			var project = table.cell( i, 1).data();
 			var path = table.cell( i, 2).data();
-			var token = table.cell( i, 3).data();
-			var branch = table.cell( i, 4).data();
-			var id = table.cell( i, 6).data();
+			if (path=="")
+			{
+				path = ".";
+			}
+			var format = table.cell( i, 3).data();
+			var token = table.cell( i, 4).data();
+			var branch = table.cell( i, 5).data();
+			var id = table.cell( i, 7).data();
 			if(i>0)
 			{
 				payload = payload + ', ';
 			}
-			payload = payload + '{"id":'+i+',"fqdn":"'+fqdn+'","project":"'+project+'","path":"'+ path +'","token":"'+token+'","branch":"'+branch+'"}';
+			payload = payload + '{"id":'+i+',"fqdn":"'+fqdn+'","project":"'+project+'","path":"'+ path +'","format":"'+ format +'","token":"'+token+'","branch":"'+branch+'"}';
 
 		}
 		payload = payload + "]"
@@ -383,7 +395,7 @@
 		else
 			var project_name = $('#project_name').val()+"/";
 		var path = $('#path').val();
-		if (path=="")
+		if (path=="" || path==".")
 			var path = "";
 		else
 			var path = $('#path').val()+"/";
@@ -434,6 +446,7 @@
 		var table = $('#gitlab').DataTable();
 		var gitlab_fqdn = $( "#gitlab_fqdn" ).val();
 		var project_name = $( "#project_name" ).val();
+		var format = $("#format option:selected").val();
 		var path = $( "#path" ).val();
 		var token = $( "#token" ).val();
 		var branch = $( "#branch" ).val();
@@ -442,6 +455,7 @@
 				"fqdn": gitlab_fqdn,
 				"project": project_name,
 				"path": path,
+				"format": format,
 				"token": token,
 				"id":555,
 				"branch": branch

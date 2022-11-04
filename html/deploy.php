@@ -4,6 +4,8 @@
 	$json = file_get_contents('/etc/fpm/gitlab.json');
 	$json_data = json_decode($json,true);
 
+	# If request doesn't contain the gitlab variable return an error.
+	# Gitlab variable is meant to be an ID.
 	if( !(isset($_POST['gitlab'])) )
 	{
 			echo '
@@ -15,9 +17,11 @@
 	}
 	else
 	{
+		# Run through all the gitlab entries and try to match the ID.
 		$found_git = "false";
 		foreach($json_data as $git)
 		{
+			# Get all details for the Gitlab to be used.
 			if($git["id"] == $_POST['gitlab'])
 			{
 				$found_git="true";
@@ -25,9 +29,13 @@
 				$gitlab = $git["fqdn"];
 				$project = $git["project"];
 				$branch = $git["branch"];
+				$format = $git["format"];
 				$path = $git["path"];
+				if ($path == ".")
+					$path = "";
 			}
 		}
+		# If the ID is not found return an error.
 		if ($found_git == "false")
 		{
 			echo '
@@ -38,8 +46,9 @@
 			exit();
 		}
 	}
-
-
+	# If request doesn't contain the policy name as a variable, return an error.
+	# We assume that the policy name is going to match with the file name and 
+	# the file extension will be either .json or .yaml depending on the format.
 	if( !(isset($_POST['policy'])) )
 	{
 		echo '
@@ -50,8 +59,10 @@
 		exit();
 	}
 	else
-		$policy = $_POST['policy'].".json";
+		$policy = $_POST['policy'].".". strtolower($format);
 
+	# The policy_data indicate what changed are required to be done on the policy.
+	# Without this we return an error. 
 	if( !(isset($_POST['policy_data'])) )
 	{
 		echo '
@@ -64,13 +75,14 @@
 	else
 		$policy_data = $_POST['policy_data'];
 
-	if( !(isset($_POST['support_id'])) )
+	# Check if the support ID is sent as a parameter.
+		if( !(isset($_POST['support_id'])) )
 		$support_id = "-";
 	else
 		$support_id = $_POST['support_id'];
 
-
-	if( !(isset($_POST['comment'])) )
+	# Check if the Gitlab comment is sent as a parameter.
+		if( !(isset($_POST['comment'])) )
 		$comment = "-";
 	else
 		$comment = base64_decode($_POST['comment']);
@@ -127,6 +139,7 @@
 			// everything is OK
 			return $result;
 	}
+	# This function will verify that the Gitlab repo exists and we are able to connect.
 	function verify_project($project, $token, $gitlab) {
 		$headers = array(
 			'Content-Type: application/json',
@@ -171,6 +184,7 @@
 			if (!$project_found )
 				return -1;
 	}
+	# This function will verify that the policy file exists and download from Gitlab in Base64 format.
 	function get_policy($project, $token, $id, $gitlab, $path, $policy, $branch) {
 		$headers = array(
 			'Content-Type: application/json',
@@ -205,9 +219,10 @@
 				return $result["content"];
 			}
 			else
-				return "failure";
+				return -1;
 
 	}
+	# This function will upload the policy file from Gitlab in Base64 format.
 	function update_policy($project, $token, $id, $gitlab, $path, $policy, $branch, $payload) {
 		$headers = array(
 			'Content-Type: application/json',
@@ -244,10 +259,10 @@
 	
 	}
 
-
 	#### Verify that the Project exists and get ID
 	$id = verify_project($project, $token, $gitlab);
 
+	# if the result of the verify project is -3 then it is an authentication issue
 	if ($id == -3)
 	{
 		echo '
@@ -257,6 +272,7 @@
 				</div>';
 		exit();
 	}
+	# if the result of the verify project is -2 then it is an connectivity issue
 	if ($id == -2)
 	{
 		echo '
@@ -266,7 +282,7 @@
 				</div>';
 		exit();
 	}
-
+	# if the result of the verify project is -1 then the repo was not found
 	if ($id == -1)
 	{
 
@@ -281,6 +297,7 @@
 	#### Verify that the Policy exists and get contents exists
 	$policy_content = get_policy($project, $token,  $id, $gitlab, $path, $policy, $branch);
 
+	# if the result of the verify project is -2 then it is an connectivity issue
 	if ($policy_content == -2)
 	{
 		echo '
@@ -290,8 +307,8 @@
 				</div>';
 		exit();
 	}
-
-	if ($policy_content == "failure")
+	# if the result of the verify project is -1 then the pollicy was not found
+	if ($policy_content == -1)
 	{
 
 		echo '
@@ -301,21 +318,16 @@
 		</div>';
 		exit();
 	}
-	if (!json_validate(base64_decode($policy_content)))
-	{
-		echo '
-		<div class="alert alert-danger alert-dismissible fade show" role="alert">
-  		<strong>Error!</strong>The policy is not the JSON format.
-  		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-		</div>';		
-		exit();
-	}
-	file_put_contents("policy.json",base64_decode($policy_content));
+
+	# store the policy to a file
+	file_put_contents("policy",base64_decode($policy_content));
 	
-	$run_python_script = 'python3 modify-nap.py ' . $policy_data ;
+	# Run the python script to make the policy changes
+	$run_python_script = 'python3 modify-nap.py ' . strtolower($format) . ' ' . $policy_data ;
 	$command = escapeshellcmd($run_python_script);
 	$output = shell_exec($command);
 	
+	# if the output of the script includes Success word then the script was successful.
 	if(!(strpos($output, 'Success') !== false))
 	{
 		echo '
@@ -327,11 +339,12 @@
 	else
 	{ 
 
-		// Read the JSON file 
-		$new_policy = base64_encode(file_get_contents('policy_mod.json'));
-
+		# the python script will have created a file called "policy_mod".
+		$new_policy = base64_encode(file_get_contents('policy_mod'));
+		# create the payload to send to Gitlab
 		$payload = '{"encoding":"base64", "branch": "'.$branch.'", "content": "'.$new_policy.'", "commit_message": "'.$comment.'"}';
-		#$payload = json_decode($string,true);
+
+		# run function that will upload the updated file.
 		$result = update_policy($project, $token, $id, $gitlab, $path, $policy, $branch, $payload);
 
 		echo '
@@ -340,7 +353,9 @@
   		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 		</div>';
 	}
-		
 	
+	# Delete Temp files
+	unlink('policy');
+	unlink('policy_mod');
 
 ?>

@@ -81,7 +81,7 @@
 
 				<div class="row">
 	
-					<div class="col-5">
+					<div class="col-4">
 						<div class="panel">
 							<div class="title">Search for violation </div>
 							<div class="line"></div>

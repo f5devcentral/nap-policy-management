@@ -142,7 +142,7 @@
       <link href="dashboard.css" rel="stylesheet">
 
    </head>
-   <body>
+   <body style="min-width: 1280px;">
 	 		<nav class="navbar navbar-dark bg-dark sticky-top " style="padding:0px 50px 0px 10px;">
 					
 					<a class="navbar-brand" href="#"><img src="images/app-protect.svg" width=32/> &nbsp; NGINX App Protect - False Positive Management</a>

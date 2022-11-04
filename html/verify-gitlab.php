@@ -77,7 +77,7 @@
 	{
 		$path = $_POST['path'];
 		if ($path == "")
-			$path= "-";
+			$path= ".";
 	}
 		
 	function verify_project($project, $token, $gitlab) {
@@ -201,7 +201,7 @@
 		exit();
 	}
 	
-	if ($path == "-") 
+	if ($path == ".") 
 		$policy_content = "Folder Found";
 	else
 		$policy_content = get_path($project_name, $token,  $id, $gitlab_fqdn, $path, $branch);

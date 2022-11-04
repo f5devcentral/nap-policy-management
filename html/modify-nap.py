@@ -2,6 +2,7 @@ import os
 import json
 import sys
 import base64
+import yaml
 
 
 def is_json(myjson):
@@ -767,7 +768,6 @@ def change_header_base64 (policy_json, name, value):
 	return policy_json, True, "<b>Success!</b> Header Base64 settings modified"
 
 ##### VIOL_EVASION
-
 def evasion_technique(policy_json, name, enabled):
 	if "blocking-settings" in  policy_json["policy"] :
 		if "evasions" in policy_json["policy"]["blocking-settings"]:
@@ -787,7 +787,6 @@ def evasion_technique(policy_json, name, enabled):
 	return policy_json, True, "<b>Success!</b> Evasion technique sub-violation disabled"
  
 ##### VIOL_HTTP_COMPLIANCE
-
 def http_compliance(policy_json, name, enabled):
 	if "blocking-settings" in  policy_json["policy"] :
 		if "http-protocols" in policy_json["policy"]["blocking-settings"]:
@@ -807,28 +806,30 @@ def http_compliance(policy_json, name, enabled):
 	return policy_json, True, "<b>Success!</b> HTTP Protocol compliance sub-violation disabled"
 
 
-
-
-
-
-
-encoded_input = sys.argv[1]
+format = sys.argv[1]
+encoded_input = sys.argv[2]
 input_variables_tmp = base64.b64decode(encoded_input).decode('utf-8')
 input_variables = json.loads(input_variables_tmp)
 
+# Open File
+f = open('policy')
 
-# Opening JSON file
-f = open('policy.json')
-
-if is_json(f):
-	f.close()
-	z = open('policy.json')	
-	jData = json.load(z)
+if (format == "yaml"):
+	try:
+		yData = yaml.safe_load(f)
+		jData = yData["spec"]
+	except:
+		print ("Input file not YAML")		
+		exit()
 else:
-	print ("Input file not JSON")
-	exit()
+	try:
+		jData = json.load(f)
+	except:
+		print ("Input file not JSON")		
+		exit()
 
-z.close()
+f.close()
+
 msg = "No match"
 
 if input_variables["type"]=="attack_sig_global":
@@ -846,7 +847,6 @@ if input_variables["type"]=="attack_sig_cookie":
 if input_variables["type"]=="attack_sig_header":
 	jData, result, msg  = override_signature_on_entity(jData,"headers",input_variables["entity"],input_variables["sig_id"],False)
 
-
 if input_variables["type"]=="modify_bot_class":
 	jData, result, msg = modify_bot_class(jData,input_variables["class_name"],input_variables["action"])
 
@@ -855,7 +855,6 @@ if input_variables["type"]=="modify_bot_signature":
 
 if input_variables["type"]=="cookie_length":
 	jData, result, msg = cookie_length(jData,input_variables["value"])
-
 
 if input_variables["type"]=="header_length":
 	jData, result, msg = header_length(jData,input_variables["value"])
@@ -938,11 +937,12 @@ if input_variables["type"]=="http_protocol_compliance":
 	jData, result, msg = http_compliance(jData,input_variables["name"],input_variables["enabled"])
 
 
-
-
-
-
-with open('policy_mod.json', 'w', encoding='utf-8') as f:
-	json.dump(jData, f, ensure_ascii=False, indent=4)
+if (format == "yaml"):
+	yData["spec"] = jData
+	with open('policy_mod', 'w', encoding='utf-8') as f:
+		yaml.dump(yData, f, indent=2)
+else:
+	with open('policy_mod', 'w', encoding='utf-8') as f:
+		json.dump(jData, f, ensure_ascii=False, indent=4)
 
 print (msg)
