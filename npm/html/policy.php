@@ -758,7 +758,7 @@
 
                             	<div class="col-7">
                                  	<div class="panel">
-                                    	<div class="title"> Violation
+                                    	<div class="title"> Violations Settings
                                           <div class="btn-group" style="float:right">
                                              <button type="button" class="btn btn-sm btn-outline-secondary btn-json" id="blocking_json" data-bs-toggle="modal" data-bs-target="#jsonModal">Edit</button>
                                           </div>
@@ -768,6 +768,7 @@
                                        		<table id="violations" class="table table-striped table-bordered" style="width:100%">
                                           		<thead>
                                                    <tr>
+                                                      <th>Name</th>
                                                       <th>Decription</th>
                                                       <th style="width: 45px; text-align: center;">Alarm</th>
                                                       <th style="width: 45px; text-align: center;">Block</th>
@@ -1682,7 +1683,7 @@
 
                    <input type="text" class="form-control" id="general_settings_key" hidden>
 
-                  <div class="col-md-6 blocking_form vars" hidden>
+                  <div class="col-md-6 vars" hidden>
                      <input type="text" class="form-control row" id="table_row">
                   </div>
 
@@ -1743,7 +1744,7 @@
                      <label class="form-label">XFF Headers</label>
                   </div> 
                   <div class="col-md-8 vars form_xff" >
-                     <input type="text" class="form-control blocking_form" id="form_xff_headers">
+                     <input type="text" class="form-control" id="form_xff_headers">
                   </div> 
                   
                   
@@ -1772,17 +1773,21 @@
 
                   <!--  ##############  Violations ############## -->
                            
-                  <div class="col-md-8 blocking_form vars form_violations">
+                  <div class="col-md-8 vars form_violations">
                      <label class="form-label">Description</label>
-                     <input type="text" class="form-control blocking_form" id="violation_form_description" disabled>
+                     <input type="text" class="form-control" id="violation_form_description" disabled>
                   </div>
-      
-                  <div class="col-md-2 blocking_form vars form_violations" style="text-align:center" >
+                  <div class="col-md-8 vars">
+                     <label class="form-label">Name</label>
+                     <input type="text" class="form-control" id="violation_form_name" disabled>
+                  </div>
+
+                  <div class="col-md-2 vars form_violations" style="text-align:center" >
                      <label class="form-label" style="width:100%;">Alarm</label>
                      <input class="checkbox_form" type="checkbox" id="violation_form_alarm">
                   </div>
                   
-                  <div class="col-md-2 blocking_form vars form_violations" style="text-align:center" >
+                  <div class="col-md-2 vars form_violations" style="text-align:center" >
                      <label class="form-label" style="width:100%;">Block</label>
                      <input class="checkbox_form" type="checkbox" id="violation_form_block">
                   </div>
@@ -1792,7 +1797,7 @@
                            
                   <div class="col-md-10 vars form_evasion">
                      <label class="form-label">Description</label>
-                     <input type="text" class="form-control blocking_form" id="evasion_form_description" disabled>
+                     <input type="text" class="form-control" id="evasion_form_description" disabled>
                   </div>
       
                   <div class="col-md-2 vars form_evasion" style="text-align:center" >
@@ -1804,7 +1809,7 @@
                            
                   <div class="col-md-10 vars form_compliance">
                      <label class="form-label">Description</label>
-                     <input type="text" class="form-control blocking_form" id="compliance_form_description" disabled>
+                     <input type="text" class="form-control" id="compliance_form_description" disabled>
                   </div>
       
                   <div class="col-md-2 vars form_compliance" style="text-align:center" >
@@ -2023,21 +2028,22 @@
 			"createdRow": function( row, data, dataIndex ) {
   
 				if ( data['alarm'] == true )
-				  $('td', row).eq(1).html("<i class='fa fa-check-square-o fa-2x green'></i>");
-				else 
-				  $('td', row).eq(1).html("<i class='fa fa-minus-square fa-2x red' ></i>");
-				if ( data['block'] == true )
 				  $('td', row).eq(2).html("<i class='fa fa-check-square-o fa-2x green'></i>");
 				else 
 				  $('td', row).eq(2).html("<i class='fa fa-minus-square fa-2x red' ></i>");
+				if ( data['block'] == true )
+				  $('td', row).eq(3).html("<i class='fa fa-check-square-o fa-2x green'></i>");
+				else 
+				  $('td', row).eq(3).html("<i class='fa fa-minus-square fa-2x red' ></i>");
 				
-            $('td', row).eq(3).html("<i class='fa fa-edit'></i>");  
+            $('td', row).eq(4).html("<i class='fa fa-edit'></i>");  
 
 			  },
          "columnDefs": [
-            {target: 3,visible: true,searchable: false}
+            {target: 4,visible: true,searchable: false}
          ],	            
          "columns": [
+				{ "className":'bold', "data":"name" },
 				{ "className":'bold', "data":"description" },
 				{ "className":'attacks', "data":"alarm"},
 				{ "className":'attacks', "data":"block"},
@@ -2053,16 +2059,21 @@
             var tr = $(this).closest('tr');
             var idx = table.row(tr).index();
 
-            var description = table.cell( idx, 0).data();
-            var alarm = table.cell( idx, 1).data();
-            var block = table.cell( idx, 2).data();
+            var viol_name = table.cell( idx, 0).data();
+            var description = table.cell( idx, 1).data();
+            var alarm = table.cell( idx, 2).data();
+            var block = table.cell( idx, 3).data();
 
             $(".vars").hide();
+            $(".form_violations").show();
 
             var myModal = new bootstrap.Modal(document.getElementById('editModal'))
             myModal.show()
             $("#violation_form_description").val(description);
+            $("#violation_form_name").val(viol_name);
+
             $("#table_row").val(idx);
+            $("#general_settings_key").val("violations-item");
             if (alarm == true)
                $("#violation_form_alarm").attr("checked", "checked");
             else
@@ -2072,9 +2083,6 @@
                $("#violation_form_block").attr("checked", "checked");
             else
                $("#violation_form_block").removeAttr( "checked"); 
-
-            $(".form_violations").show();
-            
       });
 
 	} );
@@ -2123,6 +2131,7 @@
          myModal.show()
          $("#evasion_form_description").val(description);
          $("#table_row").val(idx);
+         $("#general_settings_key").val("evasion-item");
          if (enabled == true)
             $("#evasion_form_enabled").attr("checked", "checked");
          else
@@ -2177,6 +2186,8 @@
          myModal.show()
          $("#compliance_form_description").val(description);
          $("#table_row").val(idx);
+         $("#general_settings_key").val("compliance-item");
+
          if (enabled == true)
             $("#compliance_form_enabled").attr("checked", "checked");
          else
@@ -3979,16 +3990,19 @@
       var payload = btoa(json_policy);
       var type = $("#json_variable").val();
       var policy = $("#policy_name").val();
+      var format = "<?php echo $format; ?>";
+
+
 
       $("#change_results").show();
-      //append(" <h6> Started parsing NAP policy<span style='color:blue'><b>: " + policies[i].name + " </b></span></h6>");
       $.ajax({
          method: "POST",
-         url: "save-config.php",
+         url: "save-config-json.php",
          data: {
             type:type,
             policy: policy,
-            config: payload
+            config: payload,
+            format: format
          }
       })
          .done(function(msg) {
@@ -4023,7 +4037,7 @@
             }           
          })
          .fail(function(jqXHR, textStatus, Status) {
-            
+            $("#change_results").html("<h6>Error. Got <span style='color:red'> "+Status+"</span></h6>");            
          });
       });
 </script>
@@ -4068,8 +4082,49 @@
          }
          else
             payload = btoa('{"xff":false}');
-      }              
-     
+      }
+
+      if (type=="violations-item")
+      {
+         var description=$("#violation_form_description").val();
+         var viol_name=$("#violation_form_name").val();
+         
+         if($("#violation_form_alarm").is(":checked"))
+            var alarm=true;
+         else
+            var alarm=false;
+
+         if($("#violation_form_block").is(":checked"))
+            var block=true;
+         else
+            var block=false;  
+         
+         payload = btoa('{"name":"'+viol_name+'", "description":"'+description+'", "alarm":'+alarm+', "block":'+block+'}');
+      }  
+      if (type=="evasion-item")
+      {
+         var description=$("#evasion_form_description").val();
+         
+         if($("#evasion_form_enabled").is(":checked"))
+            var enabled=true;
+         else
+            var enabled=false;
+
+        
+         payload = btoa('{"description":"'+description+'", "enabled":'+enabled+'}');
+      }
+      if (type=="compliance-item")
+      {
+         var description=$("#compliance_form_description").val();
+         
+         if($("#compliance_form_enabled").is(":checked"))
+            var enabled=true;
+         else
+            var enabled=false;
+
+        
+         payload = btoa('{"description":"'+description+'", "enabled":'+enabled+'}');
+      }        
 
       $("#change_results_general").show();
       $.ajax({
@@ -4089,11 +4144,11 @@
                if(msg.warnings.length>0)
                {
                   $("#change_results_general").append("<h7 style='color:red'> <b>Warnings:</b> <span style='color:red'>"+JSON.stringify(msg.warnings, null, 2)+"</span>. </h7><br>");
-                  $("#change_results_general").append("<h7 style='color:orange'>The window will reload in 1 second</h7><br>");
+                  $("#change_results_general").append("<h7 style='color:orange'>The window will reload in 5 second</h7><br>");
                   
                   setTimeout(function() {
                      location.reload();
-                  }, 1000); 
+                  }, 5000); 
                }
                else
                {
@@ -4114,7 +4169,8 @@
             }           
          })
          .fail(function(jqXHR, textStatus, Status) {
-               $("#change_results_general").html("<h6> Parsing error:<span style='color:red'> Undetermined Error </span>. </h6>");
+               $("#change_results_general").html("<h6>Error. Got <span style='color:red'> "+Status+"</span></h6>");            
+
          });
       });
 </script>

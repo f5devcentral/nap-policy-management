@@ -61,108 +61,86 @@
    $policy_data = json_decode($policy, true);
    $new_data = json_decode(base64_decode($payload), true);
 
+   if ($type == "evasion-item")
+   {
+      $temp_data=json_decode(base64_decode($payload),true);
+      $temp_array=[];
+      $found=0;
+      if(key_exists("evasions",$policy_data["policy"]["blocking-settings"]))
+      {
+         foreach($policy_data["policy"]["blocking-settings"]["evasions"] as $key)
+         {
+            if ($temp_data["description"]==$key["description"])
+            {
+               $found=1;
+               $key["enabled"] = $temp_data["enabled"];
+            }
+            array_push($temp_array,$key); 
+         }
+         if ($found==0)
+            array_push($policy_data["policy"]["blocking-settings"]["evasions"], json_decode(base64_decode($payload),true));
+         else
+            $policy_data["policy"]["blocking-settings"]["evasions"]=$temp_array;            
+      }
+      else
+      {
+         array_push($policy_data["policy"]["blocking-settings"]["evasions"], json_decode(base64_decode($payload),true));
+      }
+   }
+   if ($type == "compliance-item")
+   {
+      $temp_data=json_decode(base64_decode($payload),true);
+      $temp_array=[];
+      $found=0;
+      if(key_exists("http-protocols",$policy_data["policy"]["blocking-settings"]))
+      {
+         foreach($policy_data["policy"]["blocking-settings"]["http-protocols"] as $key)
+         {
+            if ($temp_data["description"]==$key["description"])
+            {
+               $found=1;
+               $key["enabled"] = $temp_data["enabled"];
+            }
+            array_push($temp_array,$key); 
+         }
+         if ($found==0)
+            array_push($policy_data["policy"]["blocking-settings"]["http-protocols"], json_decode(base64_decode($payload),true));
+         else
+            $policy_data["policy"]["blocking-settings"]["http-protocols"]=$temp_array;
+      }
+      else
+      {
+         array_push($policy_data["policy"]["blocking-settings"]["http-protocols"], json_decode(base64_decode($payload),true));
+      }
+   }
 
-   if ($type == "Evasion-Techniques")
+   if ($type == "violations-item")
    {
-      $policy_data["policy"]["blocking-settings"]["evasions"] = json_decode(base64_decode($payload),true);
+      $temp_data=json_decode(base64_decode($payload),true);
+      $temp_array=[];
+      $found=0;
+      if(key_exists("violations",$policy_data["policy"]["blocking-settings"]))
+      {
+         foreach($policy_data["policy"]["blocking-settings"]["violations"] as $key)
+         {
+            if ($temp_data["name"]==$key["viol_name"])
+            {
+               $found=1;
+               $key["alarm"] = $temp_data["alarm"];
+               $key["block"] = $temp_data["block"];
+            }
+            array_push($temp_array,$key); 
+         }
+         if ($found==0)
+            array_push($policy_data["policy"]["blocking-settings"]["violations"], json_decode(base64_decode($payload),true));
+         else
+            $policy_data["policy"]["blocking-settings"]["violations"]=$temp_array;            
+      }
+      else
+      {
+         array_push($policy_data["policy"]["blocking-settings"]["violations"], json_decode(base64_decode($payload),true));
+      }
    }
-   if ($type == "HTTP-Compliance")
-   {
-      $policy_data["policy"]["blocking-settings"]["http-protocols"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "Violations")
-   {
-      $policy_data["policy"]["blocking-settings"]["violations"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "Headers")
-   {
-      $policy_data["policy"]["headers"] = json_decode(base64_decode($payload),true);
-   }   
-   if ($type == "Cookies")
-   {
-      $policy_data["policy"]["cookies"] = json_decode(base64_decode($payload),true);
-   }      
-   if ($type == "Sensitive Parameters")
-   {
-      $policy_data["policy"]["sensitive-parameters"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "Parameters")
-   {
-      $policy_data["policy"]["parameters"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "Methods")
-   {
-      $policy_data["policy"]["methods"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "Signatures")
-   {
-      $policy_data["policy"]["signatures"] = json_decode(base64_decode($payload),true);
-   }      
-   if ($type == "Signature-Sets")
-   {
-      $policy_data["policy"]["signature-sets"] = json_decode(base64_decode($payload),true);
-   }  
-   if ($type == "Threat-Campaigns")
-   {
-      $policy_data["policy"]["threat-campaigns"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "XML-Profiles")
-   {
-      $policy_data["policy"]["xml-profiles"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "JSON-Profiles")
-   {
-      $policy_data["policy"]["json-profiles"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "URLs")
-   {
-      $policy_data["policy"]["urls"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "FileTypes")
-   {
-      $policy_data["policy"]["filetypes"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "Response-Codes")
-   {
-      $policy_data["policy"]["general"]["allowedResponseCodes"] = json_decode(base64_decode($payload),true);
-   }   
-   if ($type == "Whitelist-IPs")
-   {
-      $policy_data["policy"]["whitelist-ips"] = json_decode(base64_decode($payload),true);
-   }   
-   if ($type == "Response-Pages")
-   {
-      $policy_data["policy"]["response-pages"] = json_decode(base64_decode($payload),true);
-   }   
-
-   if ($type == "Bot-Defense-Browsers")
-   {
-      $policy_data["policy"]["bot-defense"]["mitigations"]["browsers"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "Bot-Defense-Classes")
-   {
-      $policy_data["policy"]["bot-defense"]["mitigations"]["classes"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "Bot-Defense-Signatures")
-   {
-      $policy_data["policy"]["bot-defense"]["mitigations"]["signatures"] = json_decode(base64_decode($payload),true);
-   }
-   if ($type == "Bot-Defense-Anomalies")
-   {
-      $policy_data["policy"]["bot-defense"]["mitigations"]["anomalies"] = json_decode(base64_decode($payload),true);
-   }      
-   if ($type == "JSON-Validation-Files")
-   {
-      $policy_data["policy"]["json-validation-files"]= json_decode(base64_decode($payload),true);
-   }      
-   if ($type == "Server-Technologies")
-   {
-      $policy_data["policy"]["server-technologies"]= json_decode(base64_decode($payload),true);
-   }    
-   if ($type == "Dataguard")
-   {
-      $policy_data["policy"]["data-guard"]= json_decode(base64_decode($payload),true);
-   }  
 
    if ($type == "case_insensitive")
    {

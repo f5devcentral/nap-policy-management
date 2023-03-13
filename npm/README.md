@@ -31,49 +31,32 @@ In order for **NAP-FPM** to have permission to save the policies to GitLab, we n
 >**Note:**  Please keep the Access token as we will need to use it when we configure **NAP-FPM**.
 
 
-### Step 3. Deploy NAP-FPM docker image.
-We provide 2 options on how to deploy the NAP-FPM as a docker container.
+### Step 3. Deploy NAP-Policy-Management docker image.
 
-**First option** (Preferred) is to use build the image based on the dockerfile that is provided on this GitHub repo.
-  
-  1. Clone the repo to your docker station and switch the working directory to be `nap-false-positive`.
-      ```
-      git clone https://github.com/f5devcentral/nap-policy-management
-      cd nap-policy-management/npm
-      ```
-  2.  Copy your NGINX Plus license to the current diretory `npm`. This is required, as during the build process we will download the NGINX NAP policy converter from the NGINX repository. 
-      ```
-      cp <location of nginx-repo.crt> .
-      cp <location of nginx-repo.key> .
-      ```
-  2.  Create a Volume for persistent storage. 
-      ```
-      docker volume create fpm-volume
-      ```
-  3. Build the docker image.
-      ```
-      docker build -t nap-policy-management:latest .
-      ```
-  4. Run the image that you just built.
-      ```
-      docker run -d -p 80:80 -v fpm-volume:/etc/fpm  nap-policy-management:latest
-      ```
+1. Clone the repo to your docker station and switch the working directory to be `nap-false-positive`.
+   ```
+   git clone https://github.com/f5devcentral/nap-policy-management
+   cd nap-policy-management/npm
+   ```
+2.  Copy your NGINX Plus license to the current diretory `npm`. This is required, as during the build process we will download the NGINX NAP policy converter from the NGINX repository. 
+   ```
+   cp <location of nginx-repo.crt> .
+   cp <location of nginx-repo.key> .
+   ```
+2.  Create a Volume for persistent storage. 
+   ```
+   docker volume create fpm-volume
+   ```
+3. Build the docker image.
+   ```
+   docker build -t nap-policy-management:latest .
+   ```
+4. Run the image that you just built.
+   ```
+   docker run -d -p 80:80 -v fpm-volume:/etc/fpm  nap-policy-management:latest
+   ```
 
-> Note: If you require **NAP-FPM** to run inside K8s please open a GitHub issue for the instructions.
-
-
-**Second option** is to use the docker image that is already configured and pushed to DockerHub.
-
-> **Important Note:** This option is only for False Positive Management. Policy Editor will not work as it requires the NGINX Plus Policy converter
-
-1. Create a Volume for persistent storage. 
-  ```
-  docker volume create fpm-volume
-  ```
-2. Run the Docker instance. 
-  ```
-  docker run -d -p 80:80 -v fpm-volume:/etc/fpm  skenderidis/nap-policy-management:latest
-  ```
+> Note: If you require **NAP-Policy-Management** to run inside K8s please open a GitHub issue for the instructions.
 
 
 Ready to connect.
