@@ -1,7 +1,6 @@
 # NAP - Policy Management
-> This is a project makes it easier for SecOps teams to manage NGINX APP Protect (NAP) violations and policies through a UI.
-
-NAP Policy Management (NPM) can assist the SecOps by providing the following functionalities:
+This project makes it easier for SecOps teams to manage NGINX APP Protect (NAP) violations and policies through a UI.
+NAP Policy Management (NPM) can assist the SecOps teams by providing the following functionalities:
 - [Storing and visualizing NAP violations](#nap-dashboard)
 - [Managing False Positives](#nap-false-positive-management)
 - [Policy editor for both YAML/JSON NAP policies](#nap-policy-editor)
