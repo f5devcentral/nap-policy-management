@@ -15,10 +15,7 @@ with open(input_file, 'r') as file:
    try:
       configuration = yaml.safe_load(file)
       with open(mod_file, 'w') as json_file:
-         json.dump(configuration, json_file, indent=3)
+         json.dump(configuration["spec"], json_file, indent=3)
       print("success")
    except:
       print("parsing error") 
-
-    
-   
