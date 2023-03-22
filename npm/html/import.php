@@ -424,8 +424,14 @@
       function doLoop(policies) {
          //exit condition
          if (i >= table.rows().count()) {
-            window.location.replace("policies.php");
-            return;
+            $(".results").append("<h7 style='color:green'> <b>You will be redirected to policy list in 10 seconds</b></h7><br>");
+            $(".del_2").hide();
+            setTimeout(function() {
+               window.location.replace("policies.php");
+               return;
+            }, 10000);
+
+            
          }
          $(".results").append(" <h6> Started parsing NAP policy<span style='color:blue'><b>: " + policies[i].name + " </b></span></h6>");
          $.ajax({
