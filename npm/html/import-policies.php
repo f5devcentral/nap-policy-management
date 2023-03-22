@@ -199,14 +199,13 @@
    #save policy to file
    file_put_contents($file,$downloaded_policy);
 
-   #check if the policy is JSON/YAML. If YAML, convert to JSON
+   #check if the policy is JSON/YAML. If YAML, convert to JSON   
    if ($format=="YAML")
    {
       $yaml = 1;
       $convert_2_json = 'python3 yaml2json.py '.$file;
       $command = escapeshellcmd($convert_2_json);
       $output = shell_exec($command);
-      
       if (strpos($output, "success") === false  )
       {
          unlink($file);
