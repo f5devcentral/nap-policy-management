@@ -10,16 +10,29 @@ else:
     print("failed matching the extension")
     exit()
 
-
-with open(input_file, 'r') as file:
+# Open the YAML file and get the Kubernetes confif (first few lines). We will add the new configuration under "spec" attribute    
+with open(mod_file, 'r') as yaml_file:
    try:
-      configuration = json.load(file)
-      with open(mod_file, 'w') as json_file:
-         yaml.dump(configuration, json_file, indent=2)
-
-      print("success")
+      yaml_policy_json = yaml.safe_load(yaml_file)
+      with open(input_file, 'r') as file:
+         try:
+            configuration = json.load(file)
+            yaml_policy_json["spec"] = configuration
+            with open(mod_file, 'w') as json_file:
+               yaml.dump(yaml_policy_json, json_file, indent=2)
+            print("success")
+         except:
+            print("parsing error") 
    except:
-      print("parsing error") 
+      print("Can't read/parse exising YAML policy error") 
 
-    
-   
+
+#with open(input_file, 'r') as file:
+#   try:
+#      configuration = json.load(file)
+#      with open(mod_file, 'w') as json_file:
+#         yaml.dump(configuration, json_file, indent=2)
+#
+#      print("success")
+#   except:
+#      print("parsing error") 
