@@ -174,6 +174,67 @@
 
 	}   
 
+
+   function get_policies_bitbucket($git_fqdn, $project, $token, $id, $path, $branch, $uuid, $format) {
+      
+      $pos = strpos($project_repo, "/");
+      $project = substr($project_repo, 0, $pos);
+      $repo = substr($project_repo, $pos+1);
+
+      $headers = array(
+			'Content-Type: application/json',
+			'Accept: application/json, text/javascript, */*; ',
+			'PRIVATE-TOKEN: ' . $token
+			);
+
+			$url = $git_fqdn."/api/v4/projects/".$id."/repository/tree/?path=".urlencode($path)."&per_page=100&ref=".$branch;
+			$curl = curl_init($url);
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($curl,CURLOPT_TIMEOUT,5);
+			curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+		
+			$curl_response = curl_exec($curl);
+         $result  = array("status" => 0, "msg" => "-");
+
+         if (curl_errno($curl))
+         {
+            $result["status"]=0;
+            $result["msg"]=curl_error($curl);
+            return $result;
+         }
+
+         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+			curl_close($curl);
+			
+			if ($httpcode == 200)
+			{
+				$result = json_decode($curl_response, true);
+				$found = "Folder Not Found";
+            $list=[];
+            foreach ($result as $key)
+				{
+               $ext = ".".strtolower($format);
+					if ($key["type"] == "blob" && strpos($key['name'], $ext) !== false )
+					{
+                  $list[] = ['name' => $key['name'], 'id' => $key['id'], 'uuid' => $uuid];
+               }
+				}
+            $result["status"]=1;
+            $result["msg"]=$list;
+				return $result;
+			}
+			else
+         {
+            $result["status"]=0;
+            $result["msg"]= $httpcode . " HTTP code received while getting the policy '".$policy. "' from " .$project."/".$path;
+            return $result;
+         }
+
+	}
+
+
    if ($type=="gitlab")
    {
       $result = get_policies_gitlab($git_fqdn, $project, $token, $id, $path, $branch, $uuid, $format);

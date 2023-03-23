@@ -70,7 +70,7 @@
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($curl,CURLOPT_TIMEOUT,8);
+		curl_setopt($curl, CURLOPT_TIMEOUT,8);
 		curl_setopt($curl, CURLOPT_POSTFIELDS,$payload);
 
 		$curl_response = curl_exec($curl);
@@ -90,6 +90,7 @@
 
 	
 		$json_data = json_decode($curl_response, true);
+
 
 
 		if (sizeof($json_data["hits"]["hits"])>0)
@@ -125,6 +126,8 @@
 				
 		// Read the Signatures file 
 		$signatures = json_decode($signatures_file,true);
+
+      $json_log = json_decode($json_data["json_log"], true);
 
 ?>
 
@@ -279,7 +282,58 @@
 															<td><b><?php echo implode("<br>", $json_data["sig_cves"]); ?></b></td>
 															<td style="text-align:right">Threat Campaigns:</td>
 															<td><b><?php echo implode("<br>", $json_data["threat_campaign_names"]);  ?></b></td>											
-														</tr>											
+														</tr>
+														<tr>
+															<td style="text-align:right; vertical-align: middle">Enforcement:</td>
+															<td colspan=3>
+                                                
+                                                <table class="table table-bordered table-striped table-violation" style=" font-size:12px">
+
+                                                   <thead>
+                                                      <tr>
+                                                         <th>Violation</th>
+                                                         <th>Enforcement</th>
+                                                         <th>Signature details (ID / Name)</th>
+                                                      </tr>
+
+                                                   </thead>
+
+                                                   <tbody>
+
+                                                      <?php 
+                                                            foreach ($json_log["json_violations"] as $key_log)
+                                                            {
+                                                               
+                                                               $viol_name = $key_log["json_violation"]["name"];
+                                                               if($key_log["enforcementState"]["isBlocked"])
+                                                                  $is_blocked = '<i class="fa fa-minus-circle fa-2x red"></i>';
+                                                               else
+                                                                  $is_blocked = '<i class="fa fa-flag fa-2x black"></i>';
+
+                                                               if(array_key_exists("signature", $key_log))
+                                                               {
+                                                                  $signature_name =  $key_log["signature"]["name"];
+                                                                  $signature_id =  $key_log["signature"]["signatureId"];
+                                                               }
+                                                               else
+                                                               {
+                                                                  $signature_name = "-";
+                                                                  $signature_id = "-";
+                                                               }
+                                                               
+                                                               echo '<tr><td><b>'.$viol_name.'</b></td><td>'.$is_blocked.'</td><td>'.$signature_id.' / '.$signature_name.'</td></tr>';
+                                                                  
+                                                            }
+                                                      
+                                                      ?>
+
+                                                   </tbody>    
+
+										                  </table>
+                                             
+                                          
+                                             </td>
+														</tr>			                                          
 														<tr>
 															<td style="text-align:right">URL:</td>
 															<td colspan=3 style="word-break: break-all;"><b><span id="url"><?php echo htmlspecialchars($json_data["uri"]); ?></span></b></td>
@@ -326,7 +380,7 @@
 															?></td>
 														</tr>											
 														<tr>
-															<td style="text-align:right">Signatures:</td>
+															<td style="text-align:right; vertical-align:middle">Signatures:</td>
 															<td colspan=3>
                                                 
                                                 <table class="table table-bordered table-striped table-violation" style=" font-size:12px">
@@ -350,7 +404,6 @@
                                                          {
                                                             foreach ($signatures["signatures"] as $key_sig)
                                                             {
-                                                               
                                                                if ($sig_ids == $key_sig["signatureId"])
                                                                {
                                                                   
@@ -359,14 +412,14 @@
                                                                      if ($key_sig["hasCve"])
                                                                         $cve_temp = '<i class="fa fa-check-circle fa-2x green"></i>';
                                                                      else
-                                                                        $cve_temp = '<i class="fa fa-minus-circle fa-2x black"></i>';
+                                                                        $cve_temp = 'No';
                                                                   }
                                                                   else
                                                                   {
-                                                                     $cve_temp = '<i class="fa fa-minus-circle fa-2x black"></i>';
+                                                                     $cve_temp = 'No';
                                                                   }
                                                                   if ($key_sig["accuracy"])
-                                                                  echo '<tr><td>'.$key_sig["signatureId"].'</td><td>'.$key_sig["name"].'</td><td>'.$key_sig["accuracy"].'</td><td>'.$key_sig["risk"].'</td><td>'.$cve_temp.'</td><td>'.$key_sig["attackType"]["name"].'</td></tr>';
+                                                                  echo '<tr><td><b>'.$key_sig["signatureId"].'</b></td><td><b>'.$key_sig["name"].'</b></td><td>'.$key_sig["accuracy"].'</td><td>'.$key_sig["risk"].'</td><td>'.$cve_temp.'</td><td>'.$key_sig["attackType"]["name"].'</td></tr>';
                                                                }
                                                                   
                                                             }

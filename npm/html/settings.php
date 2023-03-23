@@ -293,8 +293,8 @@
 								<select class="form-select" id="type">
 									<option value="gitlab" selected>GitLab</option>
 									<option value="gitea">Gitea</option>
+									<option value="bitbucket">Bitbucket</option>
 									<option value="github" disabled>GitHub</option>
-									<option value="bitbucket" disabled>Bitbucket</option>
 								</select>
 							</div>									
 							<div class="col-md-10 violation_form">
@@ -392,7 +392,7 @@
 			{
 				payload = payload + ', ';
 			}
-			payload = payload + '{"id":'+id+',"fqdn":"'+fqdn+'","project":"'+project+'","path":"'+ path +'","format":"'+ format +'","token":"'+token+'","branch":"'+branch+'","uuid":"'+uuid+'","type":"'+type+'"}';
+			payload = payload + '{"id":"'+id+'","fqdn":"'+fqdn+'","project":"'+project+'","path":"'+ path +'","format":"'+ format +'","token":"'+token+'","branch":"'+branch+'","uuid":"'+uuid+'","type":"'+type+'"}';
 		}
 		payload = payload + "]"
 

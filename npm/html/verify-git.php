@@ -257,6 +257,157 @@
 
 	}
 
+	function get_key_bitbucket($git_fqdn, $project_repo, $token) {
+
+      $pos = strpos($project_repo, "/");
+      $project = substr($project_repo, 0, $pos);
+      $repo = substr($project_repo, $pos+1);
+
+      $headers = array(
+         'Content-Type: application/json',
+         'Accept: application/json, text/javascript, */*; ',
+         'Authorization: Bearer ' . $token
+         );
+      $url = $git_fqdn."/rest/api/latest/projects/";            
+	
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl,CURLOPT_TIMEOUT,4);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+		$curl_response = curl_exec($curl);
+		
+      #verify that the transaction was successful
+      if (curl_errno($curl))
+         return curl_error($curl);
+
+      #Wrong Password
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+      if ($httpcode == 401) 
+      {
+         curl_close($curl);
+         return "Error! Authentication failure.";
+      } 
+		curl_close($curl);
+
+      $result = json_decode($curl_response, true); ## Save response to a JSON variable
+      if ($httpcode == 200) 
+      {
+         foreach ($result["values"] as $temp_project)
+         {
+            if ($temp_project["name"] == $project)
+               return $temp_project["key"];        ##  Return the Repo KEY
+         }
+         return "Error! Project Not found (".$project.")";
+      } 
+      else
+         return "Error! Response received from ".$git_fqdn. " was '" . $httpcode ."'";
+	}
+
+	function verify_repo_bitbucket($git_fqdn, $project_repo, $token, $key) {
+
+      $pos = strpos($project_repo, "/");
+      $project = substr($project_repo, 0, $pos);
+      $repo = substr($project_repo, $pos+1);
+
+
+      $headers = array(
+         'Content-Type: application/json',
+         'Accept: application/json, text/javascript, */*; ',
+         'Authorization: Bearer ' . $token
+         );
+      $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos";            
+	
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl,CURLOPT_TIMEOUT,4);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+		$curl_response = curl_exec($curl);
+		
+      #verify that the transaction was successful
+      if (curl_errno($curl))
+         return curl_error($curl);
+
+      #Wrong Password
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+      if ($httpcode == 401) 
+      {
+         curl_close($curl);
+         return "Error! Authentication failure.";
+      } 
+		curl_close($curl);
+
+      $result = json_decode($curl_response, true); ## Save response to a JSON variable
+      if ($httpcode == 200) 
+      {
+         foreach ($result["values"] as $temp_repo)
+         {
+            if ($temp_repo["name"] == $repo)
+               return 1;        ##  Return the Repo KEY
+         }
+         return "Error! Repo Not found (".$repo.")";
+      } 
+      else
+         return "Error! Response received from ".$git_fqdn. " was '" . $key ."'";
+	}
+
+   function verify_path_bitbucket($git_fqdn, $project_repo, $token, $key, $path, $branch) {
+
+      $pos = strpos($project_repo, "/");
+      $project = substr($project_repo, 0, $pos);
+      $repo = substr($project_repo, $pos+1);
+
+      $headers = array(
+         'Content-Type: application/json',
+         'Accept: application/json, text/javascript, */*; ',
+         'Authorization: Bearer ' . $token
+         );
+      if ($path=".")
+         $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/files?at=refs/heads/".$branch;            
+      else
+         $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/files/".$path."?at=refs/heads/".$branch;
+         
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl,CURLOPT_TIMEOUT,4);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+		$curl_response = curl_exec($curl);
+		
+      #verify that the transaction was successful
+      if (curl_errno($curl))
+         return curl_error($curl);
+
+      #Wrong Password
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+      if ($httpcode == 401) 
+      {
+         curl_close($curl);
+         return "Error! Authentication failure.";
+      } 
+		curl_close($curl);
+
+      $result = json_decode($curl_response, true); ## Save response to a JSON variable
+      if ($httpcode == 200) 
+      {
+         return 1;
+      } 
+      elseif ($httpcode == 404) 
+      {
+         return "Error! Response received from ".$git_fqdn. " was '" . $httpcode ."' and the error message was: ". $result["errors"][0]["message"];
+      }
+      else
+         return "Error! Response received from ".$git_fqdn. " was '" . $httpcode ."'";
+	}
+
+
    if ($type=="gitlab")
    {
       #### Verify that the Project exists and get ID
@@ -288,7 +439,7 @@
          exit();
       }
    
-      echo '{"id":'.$id.', "uuid":"'.md5($git_fqdn.$project_name.$path.$token.$branch.$format).'"}';
+      echo '{"id":"'.$id.'", "uuid":"'.md5($git_fqdn.$project_name.$path.$token.$branch.$format).'"}';
 
 
    }
@@ -322,10 +473,56 @@
          exit();
       }
    
-      echo '{"id":'.$id.', "uuid":"'.md5($git_fqdn.$project_name.$path.$token.$branch.$format).'"}';
+      echo '{"id":"'.$id.'", "uuid":"'.md5($git_fqdn.$project_name.$path.$token.$branch.$format).'"}';
 
    }
 
+   if ($type=="bitbucket")
+   {
+
+      #### Verify that the Project exists and get ID
+      $key = get_key_bitbucket($git_fqdn, $project_name, $token);
+      #### If ID is not Integer, then give the error description
+
+      
+      if (!strpos($key,"Error")===false)
+      {
+         echo '
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+               <b>Failed!</b> '.$key.'
+               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>';
+         exit();
+      }
+
+      $result = verify_repo_bitbucket($git_fqdn, $project_name, $token, $key);
+   
+      if ($result != 1)
+      {
+         echo '
+               <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  <b>Failed!</b> '.$result.'
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+               </div>';
+         exit();
+      }
+
+      $result = verify_path_bitbucket($git_fqdn, $project_name, $token,  $key, $path, $branch);
+   
+      if ($result != 1)
+      {
+         echo '
+               <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  <b>Failed!</b> '.$result.'
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+               </div>';
+         exit();
+      }
+   
+      echo '{"id":"'.$key.'", "uuid":"'.md5($git_fqdn.$project_name.$path.$token.$branch.$format).'"}';
+
+
+   }
 
 
 	
