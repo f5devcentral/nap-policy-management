@@ -1,76 +1,6 @@
 <?php
 
-   ## ----------------  Check that the session exists and the user is authenticated  -------------------###
-   session_start();
-
-   if (!isset($_SESSION['auth']))
-   {
-      header("Location: login.php"); 
-      exit();
-   }
-   if (!$_SESSION["auth"])
-   {
-      header("Location: login.php"); 
-      exit();
-   }
-
-   #--------   Validate that all the POST parameters are received. Otherwise give back an error
-   $error="none";
-	if( !(isset($_POST['git_fqdn'])) )
-      $error="Git FQDN variable missing";
-	else
-		$git_fqdn = $_POST['git_fqdn'];
-
-   if( !(isset($_POST['project_name'])) || $_POST['project_name']=="")
-      $error="ProjectName variable missing";
-	else
-		$project_name = $_POST['project_name'];
-	
-	if( !(isset($_POST['token'])) || $_POST['token']=="" )
-      $error = "Token variable missing";
-	else
-		$token = $_POST['token'];
-	
-	if( !(isset($_POST['branch'])) || $_POST['branch']=="" )
-      $error = "Branch variable missing";
-	else
-		$branch = $_POST['branch'];
-	
-   if( !(isset($_POST['format'])))
-      $error = "Format variable missing";
-	else
-		$format = $_POST['format'];
-	
-
-	if( !(isset($_POST['path'])) )
-      $error = "Path variable missing";
-	else
-	{
-		$path = $_POST['path'];
-		if ($path == "")
-			$path= ".";
-	}
-
-	if( !(isset($_POST['type'])) )
-      $error = "Type variable missing";
-  
-	else
-	{
-		$type = $_POST['type'];
-	}
-
-   if($error!="none")
-   {
-      echo '
-         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Failed!</strong> '.$error.'.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-         </div>';
-      exit();
-   }
-   #--------------------------------------------------------------------------------------------------------
-	
-	function get_id_gitlab($git_fqdn, $project_repo, $token) {
+   function get_id_gitlab($git_fqdn, $project_repo, $token) {
       ### --------  Setup headers required -------- ####
       $headers = array(
          'Content-Type: application/json',
@@ -87,9 +17,9 @@
       curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($curl,CURLOPT_TIMEOUT,4);
       curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-   
+
       ###  -------------- Execute the transaction ------------- ####
-		$curl_response = curl_exec($curl);
+      $curl_response = curl_exec($curl);
 
       ###  -------------- Create an array to store the result ------------- ####
       $result  = array("status" => 0, "msg" => "-");
@@ -114,13 +44,13 @@
          curl_close($curl);
          return $result;
       } 
-		curl_close($curl);
+      curl_close($curl);
 
       if ($httpcode == 200) 
       {
          ## -------------- Save response to a JSON variable  -------------- ###
          $response = json_decode($curl_response, true);
-          
+         
          /* ----- Gitlab returns an array of all the projects. We will scan all of them 
          to match the Project/Name with the "path_with_namespace" returned by gitlab ---- */
 
@@ -145,7 +75,7 @@
          $result["msg"]= "Project/Repo Not found (".$project_repo."). Response received from ".$git_fqdn. " was '" . $httpcode ."'"; 
          return $result; ##  Return Error
       }
-	}
+   }
 
    function verify_branch_gitlab($git_fqdn, $project_repo, $token, $id, $branch) {
       ### --------  Setup headers required  -------- ####
@@ -189,15 +119,15 @@
          curl_close($curl);
          return $result;
       } 
-		curl_close($curl);
+      curl_close($curl);
 
-			
-		if ($httpcode == 200)
-		{
+         
+      if ($httpcode == 200)
+      {
          ## -------------- Save response to a JSON variable  -------------- ###
          $response = json_decode($curl_response, true);
          /* ----- Gitlab returns an array of all the branches.
-          We will scan all of them to match the Name  ---- */
+         We will scan all of them to match the Name  ---- */
 
          foreach ($response as $temp_path)
          {
@@ -220,9 +150,9 @@
          return $result; ##  Return Error         
       }
 
-	}
+   }
 
-	function verify_path_gitlab($git_fqdn, $project_repo, $token, $id, $path, $branch) {
+   function verify_path_gitlab($git_fqdn, $project_repo, $token, $id, $path, $branch) {
       ### --------  Setup headers required  -------- ####
       $headers = array(
          'Content-Type: application/json',
@@ -264,15 +194,15 @@
          curl_close($curl);
          return $result;
       } 
-		curl_close($curl);
+      curl_close($curl);
 
 
-		if ($httpcode == 200)
-		{
+      if ($httpcode == 200)
+      {
          ## -------------- Save response to a JSON variable  -------------- ###
          $response = json_decode($curl_response, true);
          /* ----- Gitlab returns an array of all the files/folders.
-          We will scan all of them 
+         We will scan all of them 
          to match the Name and the Type should be Folder (tree) ---- */
 
          foreach ($response as $temp_path)
@@ -296,9 +226,9 @@
          return $result; ##  Return Error         
       }
 
-	}
+   }
 
-	function verify_repo_gitea ($git_fqdn, $project_repo, $token) {
+   function verify_repo_gitea ($git_fqdn, $project_repo, $token) {
       ### --------  Setup headers required  -------- ####
       $headers = array(
          'Content-Type: application/json',
@@ -308,16 +238,16 @@
 
       ### --------  API endpoint -------- ####
       $url = $git_fqdn."/api/v1/repos/".$project_repo;            
-	
+
       $curl = curl_init($url);
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
       curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($curl,CURLOPT_TIMEOUT,4);
       curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-   
+
       ###  -------------- Execute the transaction ------------- ####
-		$curl_response = curl_exec($curl);
+      $curl_response = curl_exec($curl);
 
       ###  -------------- Create an array to store the result ------------- ####
       $result  = array("status" => 0, "msg" => "-");
@@ -341,11 +271,11 @@
          curl_close($curl);
          return $result;
       } 
-		curl_close($curl);
+      curl_close($curl);
 
 
       if ($httpcode == 200)
-		{
+      {
          ## -------------- Save response to a JSON variable  -------------- ###
          $response = json_decode($curl_response, true);
          # check if the "full_name" is equal to the project/repo"
@@ -370,7 +300,7 @@
          $result["msg"]= "Project/Repo Not found (".$project_repo."). Response received from ".$git_fqdn. " was '" . $httpcode ."'"; 
          return $result; ##  Return Error         
       }
-	}
+   }
 
    function verify_path_gitea($git_fqdn, $project_repo, $token, $path, $branch) {
       ### --------  Setup headers required -------- ####
@@ -415,11 +345,11 @@
          curl_close($curl);
          return $result;
       } 
-		curl_close($curl);
+      curl_close($curl);
 
 
-		if ($httpcode == 200)
-		{
+      if ($httpcode == 200)
+      {
          ## -------------- Save response to a JSON variable  -------------- ###
          $response = json_decode($curl_response, true);         
          
@@ -458,15 +388,15 @@
          return $result; ##  Return Error           
       }
 
-	}
+   }
 
-	function get_key_bitbucket($git_fqdn, $project_repo, $token) {
+   function get_key_bitbucket($git_fqdn, $project_repo, $token) {
 
       ### -------- Split Project/Repo as bitbucket needs them seperately -------- ####
       $pos = strpos($project_repo, "/");
       $project = substr($project_repo, 0, $pos);
       $repo = substr($project_repo, $pos+1);
-   
+
       ### --------  Setup headers required  -------- ####
       $headers = array(
          'Content-Type: application/json',
@@ -476,7 +406,7 @@
       
       ### --------  API endpoint -------- ####
       $url = $git_fqdn."/rest/api/latest/projects/";            
-	
+
       $curl = curl_init($url);
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -485,8 +415,8 @@
       curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
       ###  -------------- Execute the transaction ------------- ####
-		$curl_response = curl_exec($curl);
-		
+      $curl_response = curl_exec($curl);
+      
       ###  -------------- Create an array to store the result ------------- ####
       $result  = array("status" => 0, "msg" => "-");
 
@@ -509,7 +439,7 @@
          curl_close($curl);
          return $result;
       } 
-		curl_close($curl);
+      curl_close($curl);
 
 
       if ($httpcode == 200) 
@@ -542,9 +472,9 @@
          $result["msg"]= "Error! Response received from ".$git_fqdn. " was '" . $httpcode ."'";
          return $result; ##  Return Error           
       }
-	}
+   }
 
-	function verify_repo_bitbucket($git_fqdn, $project_repo, $token, $key) {
+   function verify_repo_bitbucket($git_fqdn, $project_repo, $token, $key) {
 
       ### -------- Split Project/Repo as bitbucket needs them seperately -------- ####
 
@@ -561,7 +491,7 @@
 
       ### --------  API endpoint -------- ####
       $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos";            
-	
+
       $curl = curl_init($url);
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -570,7 +500,7 @@
       curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
       ###  -------------- Execute the transaction ------------- ####      
-		$curl_response = curl_exec($curl);
+      $curl_response = curl_exec($curl);
 
       ###  -------------- Create an array to store the result ------------- ####
       $result  = array("status" => 0, "msg" => "-");
@@ -595,7 +525,7 @@
          curl_close($curl);
          return $result;
       } 
-		curl_close($curl);
+      curl_close($curl);
 
 
       if ($httpcode == 200) 
@@ -624,8 +554,8 @@
          $result["status"]=0;
          $result["msg"]= "Error! Response received from ".$git_fqdn. " was '" . $httpcode ."'";
          return $result; ##  Return Error        
-   	}
-   
+      }
+
    }
 
    function verify_path_bitbucket($git_fqdn, $project_repo, $token, $key, $path, $branch) {
@@ -642,13 +572,13 @@
          'Authorization: Bearer ' . $token
          );
 
-       ### --------  API endpoint. Depending on the path, the endpoint is different. -------- ####        
+      ### --------  API endpoint. Depending on the path, the endpoint is different. -------- ####        
       if ($path==".")
          $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/files?at=refs/heads/".$branch;            
       else
          $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/files/".$path."?at=refs/heads/".$branch;
       
- 
+
       $curl = curl_init($url);
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -657,8 +587,8 @@
       curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
       ###  -------------- Execute the transaction ------------- ####
-		$curl_response = curl_exec($curl);
-		
+      $curl_response = curl_exec($curl);
+      
       ###  -------------- Create an array to store the result ------------- ####
       $result  = array("status" => 0, "msg" => "-");
 
@@ -681,7 +611,7 @@
          curl_close($curl);
          return $result;
       } 
-		curl_close($curl);
+      curl_close($curl);
 
       
 
@@ -710,137 +640,510 @@
    }
 
 
-   if ($type=="gitlab")
-   {
-      #### Verify that the Project exists and get ID
-      $response = get_id_gitlab($git_fqdn, $project_name, $token);
+	# This function will download the policy from Gitlab in Base64 format.
+	function download_policy_gitlab($git_fqdn, $project, $token, $id, $path, $policy, $branch) {
+      ### --------  Setup headers required  -------- ####
+		$headers = array(
+			'Content-Type: application/json',
+			'Accept: application/json, text/javascript, */*; ',
+			'PRIVATE-TOKEN: ' . $token
+		);
 
-      #### If status is 0 , then give the error description
-      if ($response["status"]==0)
-      {
-         echo '
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-               <b>Failed!</b> '.$response["msg"].'
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>';
-         exit();
-      }
+      ### --------  API endpoint -------- ####
+      if ($path=="")
+         $url = $git_fqdn."/api/v4/projects/".$id."/repository/files/".urlencode($policy)."?ref=".$branch;
+      else
+         $url = $git_fqdn."/api/v4/projects/".$id."/repository/files/".urlencode($path."/".$policy)."?ref=".$branch;
 
-      $id=$response["id"];
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-      $response = verify_branch_gitlab($git_fqdn, $project_name, $token, $id, $branch);
+      ###  -------------- Execute the transaction ------------- ####   
+      $curl_response = curl_exec($curl);
 
-      #### If ID is not Integer, then give the error description
-      if ($response["status"]==0)
-      {
-         echo '
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-               <b>Failed!</b> '.$response["msg"].'
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>';
-         exit();
-      }
-
-      if ($path != ".")
-      {
-         $response = verify_path_gitlab($git_fqdn, $project_name, $token, $id, $path, $branch);
-         if ($response["status"]==0)
-         {
-            echo '
-                  <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                     <b>Failed!</b> '.$response["msg"].'
-                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                  </div>';
-            exit();
-         }
-      }
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
       
-      echo '{"id":"'.$id.'", "uuid":"'.md5($git_fqdn.$project_name.$path.$token.$branch.$format).'"}';
-
-
-   }
- 
-   if ($type=="gitea")
-   {
-
-      #### Verify that the Project exists and get ID
-      $response = verify_repo_gitea($git_fqdn, $project_name, $token,  $path, $branch);
-
-      #### If ID is not Integer, then give the error description
-      if ($response["status"]==0)
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
       {
-         echo '
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-               <b>Failed!</b> '.$response["msg"].'
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>';
-         exit();
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
       }
-      $id = $response["id"];
 
-      $response = verify_path_gitea($git_fqdn, $project_name, $token,  $path, $branch);
 
-      if ($response["status"]==0)
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
       {
-         echo '
-               <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                  <b>Failed!</b> '.$response["msg"].'
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-               </div>';
-         exit();
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+      
+      if ($httpcode == 200)
+      {
+         ## -------------- Save response to a JSON variable  -------------- ###
+         $policy_data = json_decode($curl_response, true);
+
+         $result["status"]=1;
+         $result["msg"]="Success! Policy downloaded.";
+         $result["policy"]=$policy_data;
+         return $result;
       }
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while getting the policy '".$policy. "' from " .$project."/".$path;
+         return $result;
+      }
+
+	}
+  
+	# Download the file from Gitea in Base64 format.
+	function download_policy_gitea($git_fqdn, $project, $token, $path, $policy, $branch) {
+      ### --------  Setup headers required  -------- ####
+		$headers = array(
+			'Content-Type: application/json',
+			'Accept: application/json, text/javascript, */*; ',
+			'Authorization: token ' . $token
+		);
+
+      ### --------  API endpoint -------- ####
+      if ($path=="")
+         $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($policy)."?ref=".$branch;
+      else
+         $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($path."/".$policy)."?ref=".$branch;
+
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+      ###  -------------- Execute the transaction ------------- ####
+      $curl_response = curl_exec($curl);
+      
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+      
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
+      }
+
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+
+      if ($httpcode == 200)
+      {
+         ## -------------- Save response to a JSON variable  -------------- ###
+         $policy_data = json_decode($curl_response, true);
+         $result["status"]=1;
+         $result["msg"]="Success! Policy downloaded.";
+         $result["policy"]=$policy_data;
+         return $result;
+      }
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while getting the policy '".$policy. "' from " .$project."/".$path;
+         return $result;
+      }
+
+	}   
+	# Download the file from BitBucket in plain text format.
+   function download_policy_bitbucket($git_fqdn, $project_repo, $token, $key, $path, $policy, $branch) {
+      
+      ### --------  Split Project/Repo  -------- ####
+      $pos = strpos($project_repo, "/");
+      $project = substr($project_repo, 0, $pos);
+      $repo = substr($project_repo, $pos+1);
+
+      ### --------  Setup headers required  -------- ####
+      $headers = array(
+			'Content-Type: application/json',
+			'Accept: application/json, text/javascript, */*; ',
+         'Authorization: Bearer ' . $token
+      );
+      ### --------  API endpoint -------- ####
+      if ($path=="")
+         $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/raw/".rawurlencode($policy)."?at=refs/heads/".$branch;            
+      else
+         $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/raw/".$path."/".rawurlencode($policy)."?at=refs/heads/".$branch;
+
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl,CURLOPT_TIMEOUT,5);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
    
-      echo '{"id":"'.$id.'", "uuid":"'.md5($git_fqdn.$project_name.$path.$token.$branch.$format).'"}';
+      ###  -------------- Execute the transaction ------------- ####
+		$curl_response = curl_exec($curl);
 
-   }
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
 
-   if ($type=="bitbucket")
-   {
 
-      #### Verify that the Project exists and get the Key
-      $response = get_key_bitbucket($git_fqdn, $project_name, $token);
-
-      if ($response["status"]==0)
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
       {
-         echo '
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-               <b>Failed!</b> '.$response["msg"].'
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>';
-         exit();
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
       }
-      $key = $response["key"];
 
-      $response = verify_repo_bitbucket($git_fqdn, $project_name, $token, $key);
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+        
+      if ($httpcode == 200)
+      {
+         $result["status"]=1;
+         $result["msg"]="Success! Policy downloaded.";
+         $result["policy"]=$curl_response;
+         return $result;
+      }
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while getting the policy '".$url. "' from " .$project_repo."/".$path;
+         return $result;
+      }
+	}
+   # This function will upload the policy file to Gitlab in Base64 format.
+   function update_policy_gitlab($git_fqdn, $project, $token, $id, $path, $policy, $branch, $payload) {
+      ### --------  Setup headers required -------- ####      
+      $headers = array(
+         'Content-Type: application/json',
+         'Accept: application/json, text/javascript, */*; ',
+         'PRIVATE-TOKEN: ' . $token
+      );
+      ### --------  API endpoint -------- ####
+      if ($path == "")
+         $url = $git_fqdn."/api/v4/projects/".$id."/repository/files/".urlencode($policy)."?ref=".$branch;
+      else
+         $url = $git_fqdn."/api/v4/projects/".$id."/repository/files/".urlencode($path."/".$policy)."?ref=".$branch;
+
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
    
-      if ($response["status"]==0)
+      ###  -------------- Execute the transaction ------------- ####
+		$curl_response = curl_exec($curl);
+
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+
+
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
       {
-         echo '
-               <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                  <b>Failed!</b> '.$response["msg"].'
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-               </div>';
-         exit();
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
       }
 
-      $response = verify_path_bitbucket($git_fqdn, $project_name, $token, $key, $path, $branch);
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-      if ($response["status"]==0)
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
       {
-         echo '
-               <div class="alert alert-warning alert-dismissible fade show" role="alert">
-               <b>Failed!</b> '.$response["msg"].'
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-               </div>';
-         exit();
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+      
+      if ($httpcode==200)
+      { 
+         # Success if HTTP code 200   
+         $result["status"]=1;
+         $result["msg"]="Policy updated";
+         return $result; ##  Return Success
+      }      
+      elseif ($httpcode==400)
+      {
+         $error = json_decode($curl_response, true);
+
+         $result["status"]=0;
+         $result["msg"]= "Failed updating policy. Response received from ".$git_fqdn. " was '400' and the error message is: " . $error["message"]; 
+         return $result; ##  Return Error  
       }
-   
-      echo '{"id":"'.$key.'", "uuid":"'.md5($git_fqdn.$project_name.$path.$token.$branch.$format).'"}';
-
-
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= "Failed updating policy. Response received from ".$git_fqdn. " was '" . $httpcode ."'"; 
+         return $result; ##  Return Error         
+      }      
    }
+   # This function will upload the policy file to Gitea in Base64 format.
+   function update_policy_gitea($git_fqdn, $project, $token, $path, $policy, $branch, $payload) {
+      ### --------  Setup headers required -------- ####
+      $headers = array(
+         'Content-Type: application/json',
+         'Accept: application/json, text/javascript, */*; ',
+         'Authorization: token ' . $token
+      );
+
+      ### --------  API endpoint -------- ####
+      if ($path == "")
+         $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($policy)."?ref=".$branch;
+      else
+         $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($path."/".$policy)."?ref=".$branch;
+      
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+      ###  -------------- Execute the transaction ------------- ####
+      $curl_response = curl_exec($curl);
+
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+      
+      
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
+      }
+
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
 
-	
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+      
+      if ($httpcode==200)
+      { 
+         # Success if HTTP code 200   
+         $result["status"]=1;
+         $result["msg"]="Policy updated";
+         return $result; ##  Return Success
+      }      
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= "Failed updating policy. Response received from ".$git_fqdn. " was '" . $httpcode ."'"; 
+         return $result; ##  Return Error         
+      }      
+   }
+   # This function will get the latest commitid for the branch.
+   function get_commit_bitbucket($git_fqdn, $project_repo, $token, $key, $branch) {
+      ### --------  Split Project/Repo  -------- #### 
+      $pos = strpos($project_repo, "/");
+      $project = substr($project_repo, 0, $pos);
+      $repo = substr($project_repo, $pos+1);
+
+      ### --------  Setup headers required  -------- ####
+      $headers = array(
+			'Content-Type: application/json',
+			'Accept: application/json, text/javascript, */*; ',
+         'Authorization: Bearer ' . $token
+		);
+
+      ### --------  API endpoint -------- ####
+      $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/branches";            
+
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl,CURLOPT_TIMEOUT,5);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+      ###  -------------- Execute the transaction ------------- ####
+		$curl_response = curl_exec($curl);
+
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
+      }
+
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+      
+      if ($httpcode == 200)
+      {
+         $data = json_decode($curl_response, true);
+
+         foreach($data["values"] as $my_branch)
+         {
+            if($my_branch["displayId"]==$branch)
+            {
+               $result["status"]=1;
+               $result["msg"]="Success";
+               $result["latestCommit"]=$my_branch["latestCommit"];
+               return $result;                  
+            }
+         }
+         $result["status"]=0;
+         $result["msg"]="Branch not found";
+         return $result;
+      }
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while getting the latest commit '".$git_fqdn. "' from " .$project_repo." and branch ".$branch;
+         return $result;
+      }
+	}
+   # This function will upload the policy file to bitbucket in plain text format.
+   function update_policy_bitbucket($git_fqdn, $project_repo, $token, $key, $path, $policy, $branch, $file_location, $commit_id, $comment) {
+
+      ### --------  Split Project/Repo  -------- ####      
+      $pos = strpos($project_repo, "/");
+      $project = substr($project_repo, 0, $pos);
+      $repo = substr($project_repo, $pos+1);
+
+      ### --------  Setup headers required  -------- ####
+      $headers = array(
+			'Content-Type: multipart/form-data',
+			'Accept: */*; ',
+         'Authorization: Bearer ' . $token
+		);
+
+      ### --------  Payload of new policy -------- ####
+      $payload = [
+         'content' => curl_file_create($file_location, "text/plain"),
+         'message' => $comment,
+         'branch' => "main",
+         'sourceCommitId' => $commit_id
+      ];
+      
+      ### --------  API endpoint -------- ####
+      if ($path=="")
+         $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/browse/".rawurlencode($policy);      
+      else
+         $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/browse/".$path."/".rawurlencode($policy);
+
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);         
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl, CURLOPT_TIMEOUT,5);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+      ###  -------------- Execute the transaction ------------- ####
+		$curl_response = curl_exec($curl);
+
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+
+
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
+      }
+
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+      
+      if ($httpcode == 200)
+      {
+         $result["status"]=1;
+         $result["msg"]="Success!";
+         $result["policy"] = json_decode($curl_response,true);
+         return $result;
+      }
+      else
+      {
+         $bit_bucket_error = json_decode($curl_response,true);
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while updating the policy '".$url. "' from " .$project_repo."/".$path ."' and the error message was: ". $bit_bucket_error["errors"][0]["message"];
+         return $result;
+      }
+	}
+
 
 ?>

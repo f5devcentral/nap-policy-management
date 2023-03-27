@@ -64,173 +64,227 @@
 	}
 
    function get_policies_gitlab($git_fqdn, $project, $token, $id, $path, $branch, $uuid, $format) {
+      ### --------  Setup headers required  -------- ####
 		$headers = array(
 			'Content-Type: application/json',
 			'Accept: application/json, text/javascript, */*; ',
 			'PRIVATE-TOKEN: ' . $token
-			);
+		);
 
-			$url = $git_fqdn."/api/v4/projects/".$id."/repository/tree/?path=".urlencode($path)."&per_page=100&ref=".$branch;
-			$curl = curl_init($url);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($curl,CURLOPT_TIMEOUT,5);
-			curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+      ### --------  API endpoint -------- ####
+      $url = $git_fqdn."/api/v4/projects/".$id."/repository/tree/?path=".rawurlencode($path)."&per_page=100&ref=".$branch;
+      
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl,CURLOPT_TIMEOUT,5);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 		
-			$curl_response = curl_exec($curl);
-         $result  = array("status" => 0, "msg" => "-");
+      ###  -------------- Execute the transaction ------------- ####
+      $curl_response = curl_exec($curl);
 
-         if (curl_errno($curl))
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
+      }
+
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+      
+      if ($httpcode == 200)
+      {
+         ## -------------- Save response to a JSON variable  -------------- ###
+         $result = json_decode($curl_response, true);
+         $list=[];
+         foreach ($result as $key)
          {
-            $result["status"]=0;
-            $result["msg"]=curl_error($curl);
-            return $result;
+            $ext = ".".strtolower($format);
+            if ($key["type"] == "blob" && strpos($key['name'], $ext) !== false )
+            {
+               $list[] = ['name' => $key['name'], 'id' => $key['id'], 'uuid' => $uuid];
+            }
          }
-
-         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-			curl_close($curl);
-			
-			if ($httpcode == 200)
-			{
-				$result = json_decode($curl_response, true);
-				$found = "Folder Not Found";
-            $list=[];
-            foreach ($result as $key)
-				{
-               $ext = ".".strtolower($format);
-					if ($key["type"] == "blob" && strpos($key['name'], $ext) !== false )
-					{
-                  $list[] = ['name' => $key['name'], 'id' => $key['id'], 'uuid' => $uuid];
-               }
-				}
-            $result["status"]=1;
-            $result["msg"]=$list;
-				return $result;
-			}
-			else
-         {
-            $result["status"]=0;
-            $result["msg"]= $httpcode . " HTTP code received while getting the policy '".$policy. "' from " .$project."/".$path;
-            return $result;
-         }
-
+         $result["status"]=1;
+         $result["msg"]=$list;
+         return $result;
+      }
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while getting the policies from '".$git_fqdn. "' and for " .$project."/".$path;
+         return $result;
+      }
 	}
 
    function get_policies_gitea($git_fqdn, $project, $token, $path, $branch, $uuid, $format) {
+      ### --------  Setup headers required  -------- ####
 		$headers = array(
 			'Content-Type: application/json',
 			'Accept: application/json, text/javascript, */*; ',
-			'PRIVATE-TOKEN: ' . $token
-			);
-			if ($path=="")
-				$url = $git_fqdn."/api/v1/repos/".$project."/contents/?ref=".$branch;
-			else
-				$url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($path)."/?ref=".$branch;
+         'Authorization: token ' . $token
+		);
 
-			$curl = curl_init($url);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($curl,CURLOPT_TIMEOUT,5);
-			curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-		
-			$curl_response = curl_exec($curl);
-         $result  = array("status" => 0, "msg" => "-");
+      ### --------  API endpoint -------- ####
+      if ($path=="")
+         $url = $git_fqdn."/api/v1/repos/".$project."/contents/?ref=".$branch;
+      else
+         $url = $git_fqdn."/api/v1/repos/".$project."/contents/".rawurlencode($path)."/?ref=".$branch;
 
-         if (curl_errno($curl))
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl,CURLOPT_TIMEOUT,5);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+      ###  -------------- Execute the transaction ------------- ####
+      $curl_response = curl_exec($curl);
+      
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+      
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
+      }
+
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+      
+      if ($httpcode == 200)
+      {
+         ## -------------- Save response to a JSON variable  -------------- ###
+         $result = json_decode($curl_response, true);
+         $list=[];
+         foreach ($result as $key)
          {
-            $result["status"]=0;
-            $result["msg"]=curl_error($curl);
-            return $result;
+            $ext = ".".strtolower($format);
+            if ($key["type"] == "file" && strpos($key['name'], $ext) !== false )
+            {
+               $list[] = ['name' => $key['name'], 'id' => '-', 'uuid' => $uuid];
+            }
          }
-
-         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-			curl_close($curl);
-			
-			if ($httpcode == 200)
-			{
-				$result = json_decode($curl_response, true);
-				$found = "Folder Not Found";
-            $list=[];
-            foreach ($result as $key)
-				{
-               $ext = ".".strtolower($format);
-					if ($key["type"] == "file" && strpos($key['name'], $ext) !== false )
-					{
-                  $list[] = ['name' => $key['name'], 'id' => '-', 'uuid' => $uuid];
-               }
-				}
-            $result["status"]=1;
-            $result["msg"]=$list;
-				return $result;
-			}
-			else
-         {
-            $result["status"]=0;
-            $result["msg"]= $httpcode . " HTTP code received while getting the policy '".$policy. "' from " .$project."/".$path;
-            return $result;
-         }
-
+         $result["status"]=1;
+         $result["msg"]=$list;
+         return $result;
+      }
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while getting the policies from '".$git_fqdn. "' and for " .$project."/".$path;
+         return $result;
+      }
 	}   
 
-
-   function get_policies_bitbucket($git_fqdn, $project, $token, $id, $path, $branch, $uuid, $format) {
-      
+   function get_policies_bitbucket($git_fqdn, $project_repo, $token, $key, $path, $branch, $uuid, $format) {
+      ### --------  Split Project/Repo  -------- ####      
       $pos = strpos($project_repo, "/");
       $project = substr($project_repo, 0, $pos);
       $repo = substr($project_repo, $pos+1);
 
+      ### --------  Setup headers required  -------- ####
       $headers = array(
 			'Content-Type: application/json',
 			'Accept: application/json, text/javascript, */*; ',
-			'PRIVATE-TOKEN: ' . $token
-			);
+         'Authorization: Bearer ' . $token
+		);
 
-			$url = $git_fqdn."/api/v4/projects/".$id."/repository/tree/?path=".urlencode($path)."&per_page=100&ref=".$branch;
-			$curl = curl_init($url);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($curl,CURLOPT_TIMEOUT,5);
-			curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-		
-			$curl_response = curl_exec($curl);
-         $result  = array("status" => 0, "msg" => "-");
+      ### --------  API endpoint -------- ####
+      if ($path=="")
+         $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/browse?limit=100&at=refs/heads/".$branch;            
+      else
+         $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/browse/".$path."?limit=100&at=refs/heads/".$branch;
+  
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl,CURLOPT_TIMEOUT,5);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+      ###  -------------- Execute the transaction ------------- ####
+      $curl_response = curl_exec($curl);
 
-         if (curl_errno($curl))
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+
+
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
+      }
+
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+
+      if ($httpcode == 200)
+      {
+         $result = json_decode($curl_response, true);
+
+         $list=[];
+         foreach ($result["children"]["values"] as $file)
          {
-            $result["status"]=0;
-            $result["msg"]=curl_error($curl);
-            return $result;
+            $ext = ".".strtolower($format);
+            if ($file["type"] == "FILE" && strpos($file["path"]["name"], $ext) !== false )
+            {
+               $list[] = ['name' => $file["path"]["name"], 'id' => '-', 'uuid' => $uuid];
+            }
          }
-
-         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-			curl_close($curl);
-			
-			if ($httpcode == 200)
-			{
-				$result = json_decode($curl_response, true);
-				$found = "Folder Not Found";
-            $list=[];
-            foreach ($result as $key)
-				{
-               $ext = ".".strtolower($format);
-					if ($key["type"] == "blob" && strpos($key['name'], $ext) !== false )
-					{
-                  $list[] = ['name' => $key['name'], 'id' => $key['id'], 'uuid' => $uuid];
-               }
-				}
-            $result["status"]=1;
-            $result["msg"]=$list;
-				return $result;
-			}
-			else
-         {
-            $result["status"]=0;
-            $result["msg"]= $httpcode . " HTTP code received while getting the policy '".$policy. "' from " .$project."/".$path;
-            return $result;
-         }
+         $result["status"]=1;
+         $result["msg"]=$list;
+         return $result;
+      }
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while getting the policies from '".$git_fqdn. "' and for " .$project_repo."/".$path;
+         return $result;
+      }
 
 	}
 
@@ -260,6 +314,21 @@
       {
          $policies = "var policies = [];";
       }
+   }
+
+   if ($type=="bitbucket")
+   {
+      $result = get_policies_bitbucket($git_fqdn, $project, $token, $id, $path, $branch, $uuid, $format);
+
+      if ($result["status"]==1)
+      {
+         $policies = "var policies = " . json_encode($result["msg"])  . ";";       
+      }
+      else
+      {
+         $policies = "var policies = [];";
+      }
+     
    }
 
 
@@ -333,7 +402,7 @@
                         <?php 
                            if ($result["status"]==0)
                            {
-                              echo '<div class="alert alert-primary d-flex align-items-center" role="alert">
+                              echo '<div class="alert alert-warning d-flex align-items-center" role="alert">
                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
                                           <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"></path>
                                        </svg>
@@ -528,7 +597,7 @@
             doLoop(policies);
          })
          .fail(function(msg) {
-            $(".results").append(msg);
+            $(".results").append(msg.responseText);
             i++; 
             doLoop(policies);
          });

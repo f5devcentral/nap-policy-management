@@ -396,7 +396,6 @@
 		}
 		payload = payload + "]"
 
-	console.log(payload);
 	$.post( "save-git.php",  { git: payload})
 	.done(function( data ) {
     $(".error_msg").append(data);
@@ -452,7 +451,6 @@
          $(".results").show();
          if (!msg.includes("Failed"))
          {
-            console.log(msg);
             $('#add_row').removeAttr("disabled");
             $("#results").append('<div class="alert alert-success alert-dismissible fade show" role="alert"><b>Success!</b><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
             

@@ -1,216 +1,370 @@
 <?php
 
-
-   function get_id_gitlab($git_fqdn, $project, $token) {
+   # This function will upload the policy file to Gitlab in Base64 format.
+   function update_policy_gitlab($git_fqdn, $project, $token, $id, $path, $policy, $branch, $payload) {
+      ### --------  Setup headers required -------- ####      
       $headers = array(
          'Content-Type: application/json',
          'Accept: application/json, text/javascript, */*; ',
          'PRIVATE-TOKEN: ' . $token
-         );
-      $url = $git_fqdn."/api/v4/projects";            
+      );
+      ### --------  API endpoint -------- ####
+      if ($path == "")
+         $url = $git_fqdn."/api/v4/projects/".$id."/repository/files/".urlencode($policy)."?ref=".$branch;
+      else
+         $url = $git_fqdn."/api/v4/projects/".$id."/repository/files/".urlencode($path."/".$policy)."?ref=".$branch;
+
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+      ###  -------------- Execute the transaction ------------- ####
+		$curl_response = curl_exec($curl);
+
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+
+
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
+      }
+
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+      
+      if ($httpcode==200)
+      { 
+         # Success if HTTP code 200   
+         $result["status"]=1;
+         $result["msg"]="Policy updated";
+         return $result; ##  Return Success
+      }      
+      elseif ($httpcode==400)
+      {
+         $error = json_decode($curl_response, true);
+
+         $result["status"]=0;
+         $result["msg"]= "Failed updating policy. Response received from ".$git_fqdn. " was '400' and the error message is: " . $error["message"]; 
+         return $result; ##  Return Error  
+      }
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= "Failed updating policy. Response received from ".$git_fqdn. " was '" . $httpcode ."'"; 
+         return $result; ##  Return Error         
+      }      
+   }
+	# Download the file from Gitea in Base64 format.
+	function download_policy_gitea($git_fqdn, $project, $token, $path, $policy, $branch) {
+      ### --------  Setup headers required  -------- ####
+		$headers = array(
+			'Content-Type: application/json',
+			'Accept: application/json, text/javascript, */*; ',
+			'Authorization: token ' . $token
+		);
+
+      ### --------  API endpoint -------- ####
+      if ($path=="")
+         $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($policy)."?ref=".$branch;
+      else
+         $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($path."/".$policy)."?ref=".$branch;
 
       $curl = curl_init($url);
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
       curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-      curl_setopt($curl,CURLOPT_TIMEOUT,4);
       curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
+      ###  -------------- Execute the transaction ------------- ####
       $curl_response = curl_exec($curl);
       
-      #verify that the transaction was successful
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+      
+      ### -------------- verify that the transaction was successful  -------------- ###
       if (curl_errno($curl))
-         return curl_error($curl);
-
-      #Wrong Password
-      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-      if ($httpcode == 401) 
       {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
          curl_close($curl);
-         return "Authentication failure.";
-      } 
-      curl_close($curl);
-
-      $result = json_decode($curl_response, true); ## Save response to a JSON variable
-
-      foreach ($result as $repo)
-      {
-         if ($repo["path_with_namespace"] == $project)
-            return $repo["id"];        ##  Return the Repo ID
+         return $result;
       }
 
-      return "Project/Repo Not found (".$project.").";
-   }
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-   # This function will download the policy from Gitlab in Base64 format.
-   function get_policy_gitlab($git_fqdn, $project, $token, $id, $path, $policy, $branch) {
-      $headers = array(
-         'Content-Type: application/json',
-         'Accept: application/json, text/javascript, */*; ',
-         'PRIVATE-TOKEN: ' . $token
-         );
-         if ($path=="")
-            $url = $git_fqdn."/api/v4/projects/".$id."/repository/files/".urlencode($policy)."?ref=".$branch;
-         else
-            $url = $git_fqdn."/api/v4/projects/".$id."/repository/files/".urlencode($path."/".$policy)."?ref=".$branch;
-
-         $curl = curl_init($url);
-         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-      
-         $curl_response = curl_exec($curl);
-         $result  = array("status" => 0, "msg" => "-");
-         
-         if (curl_errno($curl))
-         {
-            $result["status"]=0;
-            $result["msg"]=curl_error($curl);
-            return $result;
-         }
-
-         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
          curl_close($curl);
-      
-         if ($httpcode == 200)
-         {
-            $policy = json_decode($curl_response, true);
-            $result["status"]=1;
-            $result["msg"]=$policy;
-            return $result;
-         }
-         else
-         {
-            $result["status"]=0;
-            $result["msg"]= $httpcode . " HTTP code received while getting the policy '".$policy. "' from " .$project."/".$path;
-            return $result;
-         }
+         return $result;
+      } 
+		curl_close($curl);
 
-   }
 
-   # This function will upload the policy file to Gitlab in Base64 format.
-   function update_policy_gitlab($git_fqdn, $project, $token, $id, $path, $policy, $branch, $payload) {
-      $headers = array(
-         'Content-Type: application/json',
-         'Accept: application/json, text/javascript, */*; ',
-         'PRIVATE-TOKEN: ' . $token
-         );
-         if ($path == "")
-            $url = $git_fqdn."/api/v4/projects/".$id."/repository/files/".urlencode($policy)."?ref=".$branch;
-         else
-            $url = $git_fqdn."/api/v4/projects/".$id."/repository/files/".urlencode($path."/".$policy)."?ref=".$branch;
-         
-         $curl = curl_init($url);
-         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
-         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-      
-         $curl_response = curl_exec($curl);
-         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-         
-         $result = json_decode($curl_response, true);
+      if ($httpcode == 200)
+      {
+         ## -------------- Save response to a JSON variable  -------------- ###
+         $policy_data = json_decode($curl_response, true);
+         $result["status"]=1;
+         $result["msg"]="Success! Policy downloaded.";
+         $result["policy"]=$policy_data;
+         return $result;
+      }
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while downloading the policy '".$policy. "' from " .$project."/".$path;
+         return $result;
+      }
 
-      
-         #verify that the transaction was successful
-         if (curl_errno($curl))
-            return curl_error($curl);
-      
-         curl_close($curl);
-         if ($httpcode==200)
-            return "Success";
-         else
-            return "Failed!! ". $httpcode . " HTTP code received while updating the policy '".$policy. "' from " .$project."/".$path;;
-   }
-
-   # Download the file from Gitea in Base64 format.
-   function get_policy_gitea($git_fqdn, $project, $token, $id, $path, $policy, $branch) {
-      $headers = array(
-         'Content-Type: application/json',
-         'Accept: application/json, text/javascript, */*; ',
-         'Authorization: token ' . $token
-         );
-         if ($path=="")
-            $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($policy)."?ref=".$branch;
-         else
-            $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($path."/".$policy)."?ref=".$branch;
-
-         $curl = curl_init($url);
-         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-      
-         $curl_response = curl_exec($curl);
-         $result  = array("status" => 0, "msg" => "-");
-         
-         if (curl_errno($curl))
-         {
-            $result["status"]=0;
-            $result["msg"]=curl_error($curl);
-            return $result;
-         }
-
-         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-         curl_close($curl);
-      
-         if ($httpcode == 200)
-         {
-            $policy = json_decode($curl_response, true);
-            $result["status"]=1;
-            $result["msg"]=$policy;
-            return $result;
-         }
-         else
-         {
-            $result["status"]=0;
-            $result["msg"]= $httpcode . " HTTP code received while getting the policy '".$policy. "' from " .$project."/".$path;
-            return $result;
-         }
-
-   }
-
+	}  
    # This function will upload the policy file to Gitea in Base64 format.
    function update_policy_gitea($git_fqdn, $project, $token, $path, $policy, $branch, $payload) {
+      ### --------  Setup headers required -------- ####
       $headers = array(
          'Content-Type: application/json',
          'Accept: application/json, text/javascript, */*; ',
          'Authorization: token ' . $token
-         );
-         if ($path == "")
-            $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($policy)."?ref=".$branch;
-         else
-            $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($path."/".$policy)."?ref=".$branch;
-         
-         $curl = curl_init($url);
-         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
-         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-      
-         $curl_response = curl_exec($curl);
-         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-         
-         $result = json_decode($curl_response, true);
+      );
 
-         #verify that the transaction was successful
-         if (curl_errno($curl))
-            return curl_error($curl);
+      ### --------  API endpoint -------- ####
+      if ($path == "")
+         $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($policy)."?ref=".$branch;
+      else
+         $url = $git_fqdn."/api/v1/repos/".$project."/contents/".urlencode($path."/".$policy)."?ref=".$branch;
       
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+      ###  -------------- Execute the transaction ------------- ####
+      $curl_response = curl_exec($curl);
+
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+      
+      
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
          curl_close($curl);
+         return $result;
+      }
 
-         if ($httpcode==200)
-            return "Success";
-         else
-            return "Failed!! ". $httpcode . " HTTP code received while updating the policy '".$policy. "' from " .$project."/".$path;;
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+      
+      if ($httpcode==200)
+      { 
+         # Success if HTTP code 200   
+         $result["status"]=1;
+         $result["msg"]="Policy updated";
+         return $result; ##  Return Success
+      }      
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= "Failed updating policy. Response received from ".$git_fqdn. " was '" . $httpcode ."'"; 
+         return $result; ##  Return Error         
+      }      
    }
 
+   function get_commit_bitbucket($git_fqdn, $project_repo, $token, $key, $branch) {
+      ### --------  Split Project/Repo  -------- #### 
+      $pos = strpos($project_repo, "/");
+      $project = substr($project_repo, 0, $pos);
+      $repo = substr($project_repo, $pos+1);
+
+      ### --------  Setup headers required  -------- ####
+      $headers = array(
+			'Content-Type: application/json',
+			'Accept: application/json, text/javascript, */*; ',
+         'Authorization: Bearer ' . $token
+		);
+
+      ### --------  API endpoint -------- ####
+      $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/branches";            
+
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl,CURLOPT_TIMEOUT,5);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+      ###  -------------- Execute the transaction ------------- ####
+		$curl_response = curl_exec($curl);
+
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
+      }
+
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+      
+      if ($httpcode == 200)
+      {
+         $data = json_decode($curl_response, true);
+
+         foreach($data["values"] as $my_branch)
+         {
+            if($my_branch["displayId"]==$branch)
+            {
+               $result["status"]=1;
+               $result["msg"]="Success";
+               $result["latestCommit"]=$my_branch["latestCommit"];
+               return $result;                  
+            }
+         }
+         $result["status"]=0;
+         $result["msg"]="Branch not found";
+         return $result;
+      }
+      else
+      {
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while getting the latest commit '".$git_fqdn. "' from " .$project_repo." and branch ".$branch;
+         return $result;
+      }
+	}
+
+   function update_policy_bitbucket($git_fqdn, $project_repo, $token, $key, $path, $policy, $branch, $file_location, $commit_id, $comment) {
+
+      ### --------  Split Project/Repo  -------- ####      
+      $pos = strpos($project_repo, "/");
+      $project = substr($project_repo, 0, $pos);
+      $repo = substr($project_repo, $pos+1);
+
+      ### --------  Setup headers required  -------- ####
+      $headers = array(
+			'Content-Type: multipart/form-data',
+			'Accept: */*; ',
+         'Authorization: Bearer ' . $token
+		);
+
+      ### --------  Payload of new policy -------- ####
+      $payload = [
+         'content' => curl_file_create($file_location, "text/plain"),
+         'message' => $comment,
+         'branch' => "main",
+         'sourceCommitId' => $commit_id
+      ];
+      
+      ### --------  API endpoint -------- ####
+      if ($path=="")
+         $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/browse/".rawurlencode($policy);      
+      else
+         $url = $git_fqdn."/rest/api/latest/projects/".$key."/repos/".$repo."/browse/".$path."/".rawurlencode($policy);
+
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);         
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($curl, CURLOPT_TIMEOUT,5);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+   
+      ###  -------------- Execute the transaction ------------- ####
+		$curl_response = curl_exec($curl);
+
+      ###  -------------- Create an array to store the result ------------- ####
+      $result  = array("status" => 0, "msg" => "-");
+
+
+      ### -------------- verify that the transaction was successful  -------------- ###
+      if (curl_errno($curl))
+      {
+         $result["status"]=0;
+         $result["msg"]=curl_error($curl);
+         curl_close($curl);
+         return $result;
+      }
+
+      $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+      ###  --------------  Wrong Password -------------- ####
+      if ($httpcode == 401) 
+      {
+         $result["status"]=0;
+         $result["msg"]="Error! Authentication failure";
+         curl_close($curl);
+         return $result;
+      } 
+		curl_close($curl);
+
+      
+      if ($httpcode == 200)
+      {
+         $result["status"]=1;
+         $result["msg"]="Success!";
+         $result["policy"] = json_decode($curl_response,true);
+         return $result;
+      }
+      else
+      {
+         $bit_bucket_error = json_decode($curl_response,true);
+         $result["status"]=0;
+         $result["msg"]= $httpcode . " HTTP code received while updating the policy '".$url. "' from " .$project_repo."/".$path ."' and the error message was: ". $bit_bucket_error["errors"][0]["message"];
+         return $result;
+      }
+	}
 
 	if( !(isset($_POST['policy'])) || !(isset($_POST['uuid'])) ||  !(isset($_POST['comment'])))
 	{
@@ -267,32 +421,18 @@
     ##-----------------------   Update Policy   ----------------------------
 	if ($type=="gitlab")
 	{ 
-      #### Verify that the Project exists and get ID
-      $id = get_id_gitlab($git_fqdn, $project, $token);
 
-      #### If ID is not Integer, then give the error description
-      if (!is_int($id))
-      {
-         echo '
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-               <b>Failed!</b> '.$id.'
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>';
-         exit();
-      }
-
-
-	   # create the payload to send to Gitlab
+      # create the payload to send to Gitlab
 		$payload = '{"encoding":"base64", "branch": "'.$branch.'", "content": "'.$policy_data.'", "commit_message": "'.$comment.'"}';
 
 		# run function that will upload the updated file.
-		$result = update_policy_gitlab($git_fqdn, $project, $token, $id, $path, $policy, $branch, $payload);
+		$response = update_policy_gitlab($git_fqdn, $project, $token, $id, $path, $policy, $branch, $payload);
 
-      if ($result == "Success")
+      if ($response["status"]==1)
       {
          echo '
          <div class="alert alert-success alert-dismissible fade show" role="alert">
-         Policy Updated Successfully!
+         <b>Success!</b> '.$response["msg"].'
          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
          </div>';
       }
@@ -300,10 +440,9 @@
       {
          echo '
          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-         <b>Failed!</b> '.$result.'
+         <b>Failed!</b> '.$response["msg"].'
          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
          </div>';
-
       }
 
 	}
@@ -311,33 +450,30 @@
 	if ($type=="gitea")
 	{ 
 	   #### Verify that the Policy exists and get contents exists
-      $policy_content = get_policy_gitea($git_fqdn, $project, $token, $id, $path, $policy, $branch);
-     
+      $response = download_policy_gitea($git_fqdn, $project, $token, $path, $policy, $branch);
+
       # if the result of the get_policy function is 0 then it is an issue
-      if ($policy_content["status"] == 0)
+      if ($response["status"] == 0)
       {
          echo '
                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-               <b>Failed!</b> '.$policy_content["msg"].'
+                  <b>Failed!</b> '.$response["msg"].'
                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                </div>';
          exit();
       }
 
-
-
 		# create the payload to send to Gitlab
-		$payload = '{"branch": "'.$branch.'", "content": "'.$policy_data.'", "sha": "'.$policy_content["msg"]["sha"].'", "message": "'.$comment.'"}';
+		$payload = '{"branch": "'.$branch.'", "content": "'.$policy_data.'", "sha": "'.$response["policy"]["sha"].'", "message": "'.$comment.'"}';
 
 		# run function that will upload the updated file.
-		$result = update_policy_gitea($git_fqdn, $project, $token, $path, $policy, $branch, $payload);
+		$response = update_policy_gitea($git_fqdn, $project, $token, $path, $policy, $branch, $payload);
 
-
-      if ($result == "Success")
+      if ($response["status"]==1)
       {
          echo '
          <div class="alert alert-success alert-dismissible fade show" role="alert">
-         Policy Updated Successfully!
+         <b>Success!</b> '.$response["msg"].'
          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
          </div>';
       }
@@ -345,13 +481,50 @@
       {
          echo '
          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-         <b>Failed!</b> '.$result.'
+         <b>Failed!</b> '.$response["msg"].'
          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
          </div>';
-
       }
 
 	}
+
+   if ($type == "bitbucket")
+   {
+      #location of the file that we will be uploading
+      $new_policy = "config_files/".$_POST["policy"]."/".$_POST["policy"];
+
+      # Get latest Commit ID from branch
+		$commit = get_commit_bitbucket($git_fqdn, $project, $token, $id, $branch) ;
+      
+      if ($commit["status"]==0)
+      {
+         echo '
+         <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <b>Failed!</b> '.$response["msg"].'
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         </div>';
+         exit();
+      }
+
+      $response = update_policy_bitbucket($git_fqdn, $project, $token, $id, $path, $policy, $branch, $new_policy, $commit["latestCommit"], $comment);
+      if ($response["status"] == 1)
+      {
+         echo '
+         <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <b>Success!</b> '.$response["policy"]["id"].'
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         </div>';
+      }
+      else
+      {
+         echo '
+         <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <b>Failed!</b> '.$response["msg"].'
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         </div>';
+      }
+
+   }
 
   
    $file= "config_files/".$policy."/sync";
