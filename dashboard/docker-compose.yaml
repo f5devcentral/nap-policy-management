@@ -8,6 +8,7 @@ services:
     environment:
       - TZ
       - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms3g -Xmx3g"
   logstash:
     image: docker.elastic.co/logstash/logstash:7.17.9
     volumes:
@@ -16,12 +17,14 @@ services:
       - 8515:8515
     environment:
       - TZ
+      - "LS_JAVA_OPTS=-Xms1g -Xmx1g"
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.9
     ports:
       - 5601:5601
     environment:
       - TZ      
+    mem_limit: 1g
   grafana:
     image: grafana/grafana-oss:9.2.1
     ports:
