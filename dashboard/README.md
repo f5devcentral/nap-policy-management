@@ -47,7 +47,7 @@ curl -d "@elastic/signature-mapping.json" -H 'Content-Type: application/json' -X
 Expected Response: `{"acknowledged":true}`
 
 3. Populate the signature index with the data extracted from NGINX signature report tool. You can repeat this process to update the signatures. 
-In order to enrich the logs that Elasticsearch is receiving from NAP with information such as signature accuracy, risk, cve, systems affected, etc we need to extract the signatures from NAP (by using NGINX attack signature report tool) and import them into Elasticsearch. More info on NGINX signature report tool can be found <a href="https://docs.nginx.com/nginx-app-protect/configuration-guide/configuration/#attack-signature-report-tool" target="_blank">here</a>.
+In order to enrich the logs that Elasticsearch is receiving from NAP with information such as signature accuracy, risk, cve, systems affected, etc we need to extract the signatures from NAP (by using NGINX attack signature report tool) and import them into Elasticsearch. More info on NGINX signature report tool can be found <a href="https://docs.nginx.com/waf/configure/converters/#attack-signature-report-tool" target="_blank">here</a>.
 Otherwise you can use the `signature-report.json` file that can be found on the `signatures` folder and contains the latest signatures.
 
 ```shell
@@ -104,7 +104,7 @@ To deploy the Grafana Dashboards goto `Import Dashboard` and input the Dashboard
 | -------------                         | :---:         |-------------           |  :---:                                                             | 
 | NGINX NAP Main Dashboard              | 15675         | WAF-Logs               | <a href="https://grafana.com/grafana/dashboards/15675"> Link </a>  |
 | NGINX NAP Support-ID Dashboard        | 15676         | WAF-Logs , WAF-Decoded | <a href="https://grafana.com/grafana/dashboards/15676"> Link </a>  |
-| NGINX NAP Attack Signatures Dashboard | 15677         | WAF-Decoded            | <a href="https://grafana.com/grafana/dashboards/15677"> Link </a>  |
+| NGINX NAP Attack Signatures Dashboard | 20048         | WAF-Decoded            | <a href="https://grafana.com/grafana/dashboards/20048-attack-signatures"> Link </a>  |
 | NGINX NAP BOT Dashboard               | 15678         | WAF-Logs               | <a href="https://grafana.com/grafana/dashboards/15678"> Link </a>  |
 
 
