@@ -23,7 +23,7 @@ cd nap-policy-management/dashboard
 ## Install Elasticsearch-Logstash using docker-compose
 
 ```shell
-TZ=Asia/Dubai && docker-compose up -d
+TZ=Asia/Dubai && docker compose up -d
 ```
 
 NOTES:
