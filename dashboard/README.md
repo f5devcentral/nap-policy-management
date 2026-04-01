@@ -1,8 +1,9 @@
 # NAP Dashboard - Installation
 
-To run this Dashboard you will need to deploy following open source solutions. 
+To run this Dashboard you will need to deploy following open source solutions:
+
 - Logstash
-- Elasticsearch 
+- Elasticsearch
 - Grafana
 - Docker
 - Docker Compose
@@ -10,7 +11,7 @@ To run this Dashboard you will need to deploy following open source solutions.
 
 Steps will be provided on how to deploy all of the software in a Docker environment using Docker Compose. It is assumed that Docker and Python 3.7+ is already installed and configured on the system.
 
-### Clone the repo
+## Clone the repo
 
 Clone this repo to your local machine using `https://github.com/f5devcentral/nap-policy-management` and switch the working directory to be `nap-policy-management/dashboard`
 
@@ -19,99 +20,93 @@ git clone https://github.com/f5devcentral/nap-policy-management
 cd nap-policy-management/dashboard
 ```
 
-### Install Elasticsearch-Logstash using docker-compose
+## Install Elasticsearch-Logstash using docker-compose
 
 ```shell
-
-TZ=Asia/Dubai && docker-compose up -d
-
+TZ=Asia/Dubai && docker compose up -d
 ```
+
 NOTES:
->  - Change the timezone used in the docker containers by altering the inline environment variable in the command above accordingly to your location. A list of TZ Database Names can be found [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
->  - The TCP port that Logstash is listening to is 8515.
 
+> - Change the timezone used in the docker containers by altering the inline environment variable in the command above accordingly to your location. A list of TZ Database Names can be found [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+> - The TCP port that Logstash is listening to is 8515.
 
-### Configure Elasticsearch
->  In you are not running the following commands from your docker host, please change `localhost` to the hostname or IP address of your docker host.
+## Configure Elasticsearch
+
+> In you are not running the following commands from your docker host, please change `localhost` to the hostname or IP address of your docker host.
 
 1. Create signature index on Elasticsearch
+
 ```shell
 curl -X PUT 'http://localhost:9200/signatures/'
 ```
+
 Expected Response: `{"acknowledged":true,"shards_acknowledged":true,"index":"signatures"}`
 
-2. Create index mapping for signature index
+1. Create index mapping for signature index
+
 ```shell
 curl -d "@elastic/signature-mapping.json" -H 'Content-Type: application/json' -X PUT 'http://localhost:9200/signatures/_mapping/'
 ```
+
 Expected Response: `{"acknowledged":true}`
 
-3. Populate the signature index with the data extracted from NGINX signature report tool. You can repeat this process to update the signatures. 
+1. Populate the signature index with the data extracted from NGINX signature report tool. You can repeat this process to update the signatures. 
 In order to enrich the logs that Elasticsearch is receiving from NAP with information such as signature accuracy, risk, cve, systems affected, etc we need to extract the signatures from NAP (by using NGINX attack signature report tool) and import them into Elasticsearch. More info on NGINX signature report tool can be found <a href="https://docs.nginx.com/waf/configure/converters/#attack-signature-report-tool" target="_blank">here</a>.
 Otherwise you can use the `signature-report.json` file that can be found on the `signatures` folder and contains the latest signatures.
 
 ```shell
 python3 signatures/upload-signatures.py signatures/signatures-report.json localhost
 ```
+
 If successful it will take around 1 min to push all signatures to elastic. Expect to see multiple responses of the following: `{"_index":"signatures","_type":"_doc","_id":"200000001","_version":1,"result":"created","_shards":{"total":2,"successful":1,"failed":0},"_seq_no":7553,"_primary_term":1}`
 
+1. Create the Index Lifecycle Management (ILM) policy. This policy automatically deletes `waf-*` indices after **60 days** to prevent Elasticsearch disk usage from growing unbounded.
 
-4. Create template for NAP indexes Index Mapping
+```shell
+curl -d "@elastic/ilm-policy.json" -H 'Content-Type: application/json' -X PUT 'http://localhost:9200/_ilm/policy/waf-ilm-policy'
+```
+
+Expected Response: `{"acknowledged":true}`
+
+> **Note:** The 60-day retention period is defined in [`elastic/ilm-policy.json`](elastic/ilm-policy.json) under `phases.delete.min_age`. Adjust this value to match your retention requirements (e.g. `"30d"`, `"90d"`), or remove the ILM policy step and the `settings.index.lifecycle.name` block from [`elastic/template-mapping.json`](elastic/template-mapping.json) entirely if you do not want automatic index deletion.
+
+1. Create template for NAP indexes Index Mapping
+
 ```shell
 curl -d "@elastic/template-mapping.json" -H 'Content-Type: application/json' -X PUT 'http://localhost:9200/_template/waf_template?include_type_name'
 ```
+
 Expected Response: `{"acknowledged":true}`
 
+1. Create enrich policy for the NAP/Signatures Indices.
 
-5. Create enrich policy for the NAP/Signatures Indices.
 ```shell
 curl -d "@elastic/enrich-policy.json" -H 'Content-Type: application/json' -X PUT 'http://localhost:9200/_enrich/policy/signatures-policy'
 ```
+
 Expected Response: `{"acknowledged":true}`
 
-6. Deploy enrich policy.
+1. Deploy enrich policy.
+
 ```shell
 curl -X POST 'http://localhost:9200/_enrich/policy/signatures-policy/_execute'
 ```
+
 Expected Response: `{"status":{"phase":"COMPLETE"}}`
 
-7. Create Ingest Pipeline.
+1. Create Ingest Pipeline.
+
 ```shell
 curl -d "@elastic/sig-lookup.json" -H 'Content-Type: application/json' -X PUT 'http://localhost:9200/_ingest/pipeline/sig_lookup'
 ```
+
 Expected Response: `{"acknowledged":true}`
 
+## Configure Logging profile for NAP
 
-### Configure Grafana
-1. Setup Grafana source - Elastic WAF Index.
-```shell
-curl -d "@grafana/DS-waf-index.json" -H 'Content-Type: application/json' -u 'admin:admin' -X POST 'http://localhost:3000/api/datasources/'
-```
+For NAP working on a Docker or on a VM implementation, please configure the following logging format:
 
-2. Setup Grafana source - Elastic WAF Decoded Index.
-```shell
-curl -d "@grafana/DS-waf-decoded-index.json" -H 'Content-Type: application/json' -u 'admin:admin' -X POST 'http://localhost:3000/api/datasources/'
-```
-
-3. Deploy Grafana Dashboards.
-
-To deploy the Grafana Dashboards goto `Import Dashboard` and input the Dashboard ID (as per the following table) on `Import via grafana.com` tab. 
-<p align="center">
-<img width="500" src="../images/grafana-id.png"/>       
-</p>
-
-| Dashboard Name                        | Dashboard ID  |  Grafana Source        |   Grafana Website                                                  | 
-| -------------                         | :---:         |-------------           |  :---:                                                             | 
-| NGINX NAP Main Dashboard              | 15675         | WAF-Logs               | <a href="https://grafana.com/grafana/dashboards/15675"> Link </a>  |
-| NGINX NAP Support-ID Dashboard        | 15676         | WAF-Logs , WAF-Decoded | <a href="https://grafana.com/grafana/dashboards/15676"> Link </a>  |
-| NGINX NAP Attack Signatures Dashboard | 20048         | WAF-Decoded            | <a href="https://grafana.com/grafana/dashboards/20048-attack-signatures"> Link </a>  |
-| NGINX NAP BOT Dashboard               | 15678         | WAF-Logs               | <a href="https://grafana.com/grafana/dashboards/15678"> Link </a>  |
-
-
-
-### Configure Logging profile for NAP
-
-For NAP working on a Docker or on a VM implementation, please configure the following logging format 
 ```json
 {
     "filter": {
@@ -133,7 +128,8 @@ For NAP working on a Docker or on a VM implementation, please configure the foll
   }
 ```
 
-For NAP working on an Ingress please configure the following logging format 
+For NAP working on an Ingress please configure the following logging format:
+
 ```yaml
 apiVersion: appprotect.f5.com/v1beta1
 kind: APLogConf
@@ -155,4 +151,3 @@ spec:
 ## Support
 
 Please open a GitHub issue for any problem or enhancement you need.
-

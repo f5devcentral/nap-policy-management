@@ -4,6 +4,13 @@
       "waf*"
     ],
     "aliases": {},
+    "settings": {
+      "index": {
+        "lifecycle": {
+          "name": "waf-ilm-policy"
+        }
+      }
+    },
     "mappings": {
       "_doc": {
         "_source": {

@@ -1,4 +1,3 @@
-version: "2.4"
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
@@ -9,6 +8,9 @@ services:
       - TZ
       - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms3g -Xmx3g"
+    volumes:
+      - elasticsearch-storage:/usr/share/elasticsearch/data
+    restart: unless-stopped
   logstash:
     image: docker.elastic.co/logstash/logstash:7.17.9
     volumes:
@@ -18,16 +20,17 @@ services:
     environment:
       - TZ
       - "LS_JAVA_OPTS=-Xms1g -Xmx1g"
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.9
-    ports:
-      - 5601:5601
-    environment:
-      - TZ      
-    mem_limit: 1g
+    restart: unless-stopped
   grafana:
     image: grafana/grafana-oss:9.2.1
     ports:
       - 3000:3000
     environment:
       - TZ
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    restart: unless-stopped
+volumes:
+  grafana-storage: {}
+  elasticsearch-storage: {}

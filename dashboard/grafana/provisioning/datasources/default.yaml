@@ -1,0 +1,28 @@
+apiVersion: 1
+datasources:
+  - name: WAF-Logs
+    type: elasticsearch
+    access: proxy
+    url: http://elasticsearch:9200
+    database: waf-logs*
+    uid: waf_logs
+    jsonData:
+      esVersion: 7.10.0
+      timeField: "@timestamp"
+      maxConcurrentShardRequests: 5
+      includeFrozen: false
+    isDefault: true
+    editable: true
+  - name: WAF-Decoded
+    type: elasticsearch
+    access: proxy
+    url: http://elasticsearch:9200
+    database: waf-decoded-logs*
+    uid: waf_decoded
+    jsonData:
+      esVersion: 7.10.0
+      timeField: "@timestamp"
+      maxConcurrentShardRequests: 5
+      includeFrozen: false
+    isDefault: false
+    editable: true

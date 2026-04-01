@@ -1,0 +1,3660 @@
+{
+  "__elements": [],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "barchart",
+      "name": "Bar chart",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "elasticsearch",
+      "name": "Elasticsearch",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "geomap",
+      "name": "Geomap",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "8.3.6"
+    },
+    {
+      "type": "panel",
+      "id": "piechart",
+      "name": "Pie chart",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1651034778536,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": true,
+      "tags": [
+        "nginx"
+      ],
+      "targetBlank": true,
+      "title": "nginx",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 30,
+      "panels": [],
+      "title": "Summary",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 1
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto"
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Attacks",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 71,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 3,
+        "y": 1
+      },
+      "id": 10,
+      "options": {
+        "barWidth": 0.71,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "hidden",
+          "placement": "bottom"
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single"
+        },
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "8.3.3",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "request_status.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 15,
+        "x": 9,
+        "y": 1
+      },
+      "id": 20,
+      "options": {
+        "basemap": {
+          "config": {},
+          "name": "Layer 0",
+          "type": "default"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": true,
+          "showDebug": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "config": {
+              "showLegend": true,
+              "style": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "opacity": 0.5,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "field": "Count",
+                  "fixed": 15,
+                  "max": 15,
+                  "min": 5
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "text": {
+                  "field": "",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "textConfig": {
+                  "fontSize": 12,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
+                }
+              }
+            },
+            "location": {
+              "geohash": "geoip.location",
+              "lookup": "geoip.location",
+              "mode": "geohash"
+            },
+            "name": "Layer 2",
+            "type": "markers"
+          }
+        ],
+        "view": {
+          "id": "zero",
+          "lat": 0,
+          "lon": 0,
+          "zoom": 2.2
+        }
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "geoip.location",
+              "id": "2",
+              "settings": {
+                "precision": "4"
+              },
+              "type": "geohash_grid"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "World Map",
+      "type": "geomap"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 50
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 5
+      },
+      "id": 54,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "source_host",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "field": "source_host",
+              "id": "1",
+              "type": "cardinality"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Attackers",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 71,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1
+          },
+          "mappings": [
+            {
+              "options": {
+                "SECURITY_WAF_FLAGGED": {
+                  "index": 2,
+                  "text": "flagged"
+                },
+                "SECURITY_WAF_VIOLATION": {
+                  "index": 0,
+                  "text": "violation"
+                },
+                "SECURITY_WAF_VIOLATION_TRANSPARENT": {
+                  "index": 3,
+                  "text": "transparent"
+                },
+                "SECURITY_WAF_VIOLATION_TRANSPARENT_MODE": {
+                  "index": 1,
+                  "text": "transparent"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 3,
+        "y": 5
+      },
+      "id": 16,
+      "options": {
+        "barWidth": 0.71,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "hidden",
+          "placement": "bottom"
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single"
+        },
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "8.3.3",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "outcome_reason.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {}
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Critical"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "Count"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 3,
+        "x": 0,
+        "y": 9
+      },
+      "id": 50,
+      "options": {
+        "displayLabels": [
+          "percent",
+          "name"
+        ],
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "right",
+          "values": []
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "pluginVersion": "8.3.3",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "severity_label.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Severity",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count uri.keyword": "URLs",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": ""
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 3,
+        "x": 3,
+        "y": 9
+      },
+      "id": 48,
+      "options": {
+        "displayLabels": [
+          "name",
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom",
+          "values": [
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "pluginVersion": "8.3.3",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "client_class.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Bot Types",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count uri.keyword": "URLs",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 3,
+        "x": 6,
+        "y": 9
+      },
+      "id": 57,
+      "options": {
+        "displayLabels": [
+          "name",
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom",
+          "values": [
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "pluginVersion": "8.3.3",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "method.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Methods",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count uri.keyword": "URLs",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 26,
+      "panels": [],
+      "title": "Main",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 72
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Signatures"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 336
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 9,
+        "x": 0,
+        "y": 18
+      },
+      "id": 39,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Attack Signature Detected",
+          "url": "http://192.168.2.101:3000/d/i4BWUHAnk/attack-signatures?orgId=1&from=now-30d&to=now"
+        },
+        {
+          "targetBlank": true,
+          "title": "Bot Dashboard",
+          "url": "http://192.168.2.101:3000/d/7i-gyrx7k/bot-dashboard"
+        },
+        {
+          "targetBlank": true,
+          "title": "Support ID Dashboard",
+          "url": "http://192.168.2.101:3000/d/XyLmNexnk/supportid"
+        }
+      ],
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "violations.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "30"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            },
+            {
+              "field": "source_host",
+              "id": "3",
+              "type": "cardinality"
+            },
+            {
+              "field": "uri.keyword",
+              "id": "4",
+              "type": "cardinality"
+            },
+            {
+              "field": "policy_name.keyword",
+              "id": "5",
+              "type": "cardinality"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Violations",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 15,
+        "x": 9,
+        "y": 18
+      },
+      "id": 4,
+      "maxDataPoints": 500,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.3",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "request_status.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "0",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "@timestamp",
+              "id": "3",
+              "settings": {
+                "interval": "auto",
+                "min_doc_count": "0",
+                "timeZone": "utc",
+                "trimEdges": "0"
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Requests over Time",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IP address"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 206
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 79
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 84
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 58
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Violations"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 81
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 7,
+        "x": 0,
+        "y": 27
+      },
+      "id": 22,
+      "links": [],
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "source_host",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            },
+            {
+              "field": "violations.keyword",
+              "id": "3",
+              "type": "cardinality"
+            },
+            {
+              "field": "uri.keyword",
+              "id": "4",
+              "type": "cardinality"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "IP Addresses",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count": 1,
+              "Unique Count uri.keyword": 2,
+              "Unique Count violations.keyword": 3,
+              "source_host": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "Unique Count violations.keyword": "Violations",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "source_host": "IP Address"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Violations"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 285
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 114
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Signatures"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 336
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Device"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 123
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 9,
+        "x": 7,
+        "y": 27
+      },
+      "id": 38,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "policy_name.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "logsource.keyword",
+              "id": "6",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            },
+            {
+              "field": "source_host",
+              "id": "3",
+              "type": "cardinality"
+            },
+            {
+              "field": "uri.keyword",
+              "id": "4",
+              "type": "cardinality"
+            },
+            {
+              "field": "policy_name.keyword",
+              "id": "5",
+              "type": "cardinality"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "NAP Policies",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count": 2,
+              "Unique Count ip_client": 3,
+              "Unique Count policy_name.keyword": 5,
+              "Unique Count uri.keyword": 4,
+              "logsource.keyword": 0,
+              "policy_name.keyword": 1
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "logsource.keyword": "Device",
+              "policy_name.keyword": "Policy",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Violations"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 285
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 114
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Signatures"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 336
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Response Code"
+            },
+            "properties": [
+              {
+                "id": "custom.align",
+                "value": "left"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 8,
+        "x": 16,
+        "y": 27
+      },
+      "id": 45,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Response Code"
+          }
+        ]
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "threat_campaign_names.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "3",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "field": "ip_client",
+              "id": "1",
+              "type": "cardinality"
+            },
+            {
+              "id": "3",
+              "type": "count"
+            },
+            {
+              "field": "policy_name.keyword",
+              "id": "4",
+              "type": "cardinality"
+            }
+          ],
+          "query": "NOT threat_campaign_names.keyword:\"N/A\" && request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Threat Campaign",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count": 1,
+              "Unique Count": 2,
+              "threat_campaign_names.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count uri.keyword": "URLs",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "response_code.keyword": "Response Code",
+              "sig_names.keyword": "Signatures",
+              "threat_campaign_names.keyword": "Threat Campains",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 72
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 114
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Signatures"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 336
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Violations"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 98
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 11,
+        "x": 0,
+        "y": 38
+      },
+      "id": 55,
+      "links": [],
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "uri.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            },
+            {
+              "field": "source_host",
+              "id": "3",
+              "type": "cardinality"
+            },
+            {
+              "field": "violations.keyword",
+              "id": "4",
+              "type": "cardinality"
+            },
+            {
+              "field": "policy_name.keyword",
+              "id": "5",
+              "type": "cardinality"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "URLs",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "Unique Count violations.keyword": "Violations",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "uri.keyword": "URLs",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 72
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 114
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Violations"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 98
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 8,
+        "x": 11,
+        "y": 38
+      },
+      "id": 56,
+      "links": [],
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "sig_names.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            },
+            {
+              "field": "source_host",
+              "id": "3",
+              "type": "cardinality"
+            },
+            {
+              "field": "policy_name.keyword",
+              "id": "5",
+              "type": "cardinality"
+            }
+          ],
+          "query": "NOT sig_names.keyword:\"N/A\"&& request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Signature Names",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "Unique Count violations.keyword": "Violations",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Name",
+              "uri.keyword": "URLs",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Violations"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 285
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 114
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Signatures"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 336
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "severity_label.keyword"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 233
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "method.keyword"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 179
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 5,
+        "x": 19,
+        "y": 38
+      },
+      "id": 46,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "sig_cves.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "NOT sig_cves.keyword:\"N/A\"&& request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "CVEs",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count uri.keyword": "URLs",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_cves.keyword": "CVEs",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 72
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 10,
+        "x": 0,
+        "y": 56
+      },
+      "id": 58,
+      "links": [],
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "sub_violations.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            },
+            {
+              "field": "source_host",
+              "id": "3",
+              "type": "cardinality"
+            },
+            {
+              "field": "policy_name.keyword",
+              "id": "5",
+              "type": "cardinality"
+            }
+          ],
+          "query": "NOT sub_violations.keyword:\"N/A\" && request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Subviolations",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "Unique Count violations.keyword": "Violations",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "sub_violations.keyword": "Sub-Violations",
+              "uri.keyword": "URLs",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "index": 0,
+                  "text": "Blocked"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 72
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "sub_violations.keyword"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 296
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 7,
+        "x": 10,
+        "y": 56
+      },
+      "id": 59,
+      "links": [],
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "response_code.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            },
+            {
+              "field": "source_host",
+              "id": "3",
+              "type": "cardinality"
+            },
+            {
+              "field": "policy_name.keyword",
+              "id": "5",
+              "type": "cardinality"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Response Codes",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "Unique Count violations.keyword": "Violations",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "response_code.keyword": "Response Code",
+              "sig_names.keyword": "Signatures",
+              "uri.keyword": "URLs",
+              "violations.keyword": "Violations"
+            }
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "destinationType": "string",
+                "targetField": "Response Code"
+              }
+            ],
+            "fields": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 72
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "sub_violations.keyword"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 296
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 7,
+        "x": 17,
+        "y": 56
+      },
+      "id": 60,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Protocol Compliance",
+          "url": ""
+        },
+        {
+          "title": "Evasion Techniques",
+          "url": ""
+        },
+        {
+          "title": "Attack Signature Detected",
+          "url": ""
+        }
+      ],
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "geoip.country_name.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            },
+            {
+              "field": "source_host",
+              "id": "3",
+              "type": "cardinality"
+            },
+            {
+              "field": "policy_name.keyword",
+              "id": "5",
+              "type": "cardinality"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Response Codes",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "Unique Count violations.keyword": "Violations",
+              "details.violation.viol_name.keyword": "Violations",
+              "geoip.country_name.keyword": "Country Name",
+              "ip_client": "IP address",
+              "response_code.keyword": "Response Code",
+              "sig_names.keyword": "Signatures",
+              "uri.keyword": "URLs",
+              "violations.keyword": "Violations"
+            }
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "destinationType": "string",
+                "targetField": "Response Code"
+              }
+            ],
+            "fields": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 65
+      },
+      "id": 34,
+      "panels": [],
+      "title": "Logs",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "severity_label"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 122
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "sig_set_names"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 159
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "method"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 78
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "dest_port"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 83
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Outcome"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "response_code"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 118
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "support_id"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "Support ID Dashboard",
+                    "url": "/d/nap-supportid/supportid?var-SupportID=${__value.raw}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 26,
+        "w": 24,
+        "x": 0,
+        "y": 66
+      },
+      "id": 18,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "settings": {
+                "limit": "500"
+              },
+              "type": "logs"
+            }
+          ],
+          "query": "request_status.keyword:$Status && ip_client:$IP && outcome.keyword:$Outcome && client_class.keyword:$Bots && severity_label.keyword:$Severity && policy_name.keyword:$Policy && logsource.keyword:$Device",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Logs",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "@timestamp": true,
+              "@version": true,
+              "_id": true,
+              "_index": true,
+              "_source": true,
+              "_type": true,
+              "blocking_exception_reason": true,
+              "count": true,
+              "date_time": false,
+              "facility": true,
+              "facility_label": true,
+              "highlight": true,
+              "is_truncated": true,
+              "logsource": true,
+              "outcome": true,
+              "outcome_reason": true,
+              "priority": true,
+              "protocol": true,
+              "request_status": false,
+              "response_code": false,
+              "severity": true,
+              "sig_cves": true,
+              "sig_ids": true,
+              "sig_names": false,
+              "sig_set_names": true,
+              "sort": true,
+              "source_host": true,
+              "src_port": true,
+              "sub_violations": true,
+              "support_id": false,
+              "tags": true,
+              "threat_campaign_names": true,
+              "timestamp": true,
+              "violation_details.request-violations.violation": true,
+              "violation_rating": true,
+              "violations": true,
+              "x_forwarded_for_header_value": true
+            },
+            "indexByName": {
+              "@timestamp": 2,
+              "@version": 3,
+              "_id": 4,
+              "_index": 5,
+              "_source": 6,
+              "_type": 7,
+              "blocking_exception_reason": 8,
+              "count": 9,
+              "date_time": 1,
+              "dest_port": 16,
+              "facility": 10,
+              "facility_label": 11,
+              "highlight": 12,
+              "host": 15,
+              "ip_client": 14,
+              "is_truncated": 18,
+              "logsource": 19,
+              "method": 13,
+              "outcome": 20,
+              "outcome_reason": 21,
+              "policy_name": 22,
+              "priority": 23,
+              "protocol": 24,
+              "request_status": 25,
+              "response_code": 26,
+              "severity": 27,
+              "severity_label": 28,
+              "sig_cves": 29,
+              "sig_ids": 30,
+              "sig_names": 31,
+              "sig_set_names": 32,
+              "sort": 33,
+              "source_host": 34,
+              "src_port": 35,
+              "sub_violations": 36,
+              "support_id": 37,
+              "tags": 38,
+              "threat_campaign_names": 39,
+              "timestamp": 0,
+              "unit_hostname": 40,
+              "uri": 17,
+              "violation_details.request-violations.violation": 41,
+              "violation_rating": 42,
+              "violations": 43,
+              "vs_name": 44,
+              "x_forwarded_for_header_value": 45
+            },
+            "renameByName": {
+              "@timestamp": "",
+              "blocking_exception_reason": "Exception",
+              "host": "",
+              "ip_client": "Client IP",
+              "policy_name": "Policy",
+              "request_status": "Outcome",
+              "response_code": "",
+              "sort": "",
+              "timestamp": "Date"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 34,
+  "style": "dark",
+  "tags": [
+    "nginx",
+    "nap"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": {
+          "type": "elasticsearch",
+          "uid": "waf_logs"
+        },
+        "definition": "{\"find\": \"terms\", \"field\": \"request_status.keyword\", \"size\": 1000}",
+        "hide": 0,
+        "includeAll": true,
+        "label": "",
+        "multi": true,
+        "name": "Status",
+        "options": [],
+        "query": "{\"find\": \"terms\", \"field\": \"request_status.keyword\", \"size\": 1000}",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "elasticsearch",
+          "uid": "waf_logs"
+        },
+        "definition": "{\"find\": \"terms\", \"field\": \"ip_client\", \"size\": 1000}",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "IP",
+        "options": [],
+        "query": "{\"find\": \"terms\", \"field\": \"ip_client\", \"size\": 1000}",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "elasticsearch",
+          "uid": "waf_logs"
+        },
+        "definition": "{\"find\": \"terms\", \"field\": \"outcome.keyword\", \"size\": 1000}",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "Outcome",
+        "options": [],
+        "query": "{\"find\": \"terms\", \"field\": \"outcome.keyword\", \"size\": 1000}",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "elasticsearch",
+          "uid": "waf_logs"
+        },
+        "definition": "{\"find\": \"terms\", \"field\": \"client_class.keyword\", \"size\": 100}",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "Bots",
+        "options": [],
+        "query": "{\"find\": \"terms\", \"field\": \"client_class.keyword\", \"size\": 100}",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "elasticsearch",
+          "uid": "waf_logs"
+        },
+        "definition": "{\"find\": \"terms\", \"field\": \"severity_label.keyword\", \"size\": 1000}",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "Severity",
+        "options": [],
+        "query": "{\"find\": \"terms\", \"field\": \"severity_label.keyword\", \"size\": 1000}",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "elasticsearch",
+          "uid": "waf_logs"
+        },
+        "definition": "{\"find\": \"terms\", \"field\": \"logsource.keyword\", \"size\": 1000}",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "Device",
+        "options": [],
+        "query": "{\"find\": \"terms\", \"field\": \"logsource.keyword\", \"size\": 1000}",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "elasticsearch",
+          "uid": "waf_logs"
+        },
+        "definition": "{\"find\": \"terms\", \"field\": \"policy_name.keyword\", \"size\": 100}",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "Policy",
+        "options": [],
+        "query": "{\"find\": \"terms\", \"field\": \"policy_name.keyword\", \"size\": 100}",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "datasource": {
+          "type": "elasticsearch",
+          "uid": "h4PImYwnz"
+        },
+        "filters": [],
+        "hide": 0,
+        "name": "Filters",
+        "skipUrlSync": false,
+        "type": "adhoc"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-90d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "NGINX NAP Main Dashboard",
+  "uid": "nap-dashboard",
+  "version": 6,
+  "weekStart": "",
+  "gnetId": 15675,
+  "description": "This Dashboard provides more visibility into the logs generated by NGINX App Protect. This is part of a series of NGINX App Protect Dashboards"
+}

@@ -1,0 +1,3419 @@
+{
+  "__elements": [],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "barchart",
+      "name": "Bar chart",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "elasticsearch",
+      "name": "Elasticsearch",
+      "version": "1.0.0"
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "8.3.6"
+    },
+    {
+      "type": "panel",
+      "id": "logs",
+      "name": "Logs",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "piechart",
+      "name": "Pie chart",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1651034780905,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 50,
+      "panels": [
+        {
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "alarmed": {
+                      "color": "orange",
+                      "index": 1,
+                      "text": "ALARMED"
+                    },
+                    "blocked": {
+                      "color": "red",
+                      "index": 0,
+                      "text": "BLOCKED"
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 0,
+            "y": 1
+          },
+          "id": 19,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "/^request_status\\.keyword$/",
+              "values": false
+            },
+            "text": {
+              "valueSize": 64
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "8.3.3",
+          "targets": [
+            {
+              "alias": "",
+              "bucketAggs": [
+                {
+                  "field": "request_status.keyword",
+                  "id": "2",
+                  "settings": {
+                    "min_doc_count": "1",
+                    "order": "desc",
+                    "orderBy": "_term",
+                    "size": "10"
+                  },
+                  "type": "terms"
+                }
+              ],
+              "datasource": {
+                "type": "elasticsearch",
+                "uid": "waf_logs"
+              },
+              "metrics": [
+                {
+                  "id": "1",
+                  "type": "count"
+                }
+              ],
+              "query": "support_id.keyword:$SupportID",
+              "refId": "A",
+              "timeField": "@timestamp"
+            }
+          ],
+          "title": "Transaction Status",
+          "transformations": [],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 3,
+            "x": 5,
+            "y": 1
+          },
+          "id": 52,
+          "options": {
+            "displayLabels": [
+              "name",
+              "percent"
+            ],
+            "legend": {
+              "displayMode": "hidden",
+              "placement": "bottom",
+              "values": [
+                "percent"
+              ]
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.3",
+          "targets": [
+            {
+              "alias": "",
+              "bucketAggs": [
+                {
+                  "field": "signature-details.risk.keyword",
+                  "id": "2",
+                  "settings": {
+                    "min_doc_count": "1",
+                    "order": "desc",
+                    "orderBy": "1",
+                    "size": "15"
+                  },
+                  "type": "terms"
+                }
+              ],
+              "datasource": {
+                "type": "elasticsearch",
+                "uid": "waf_decoded"
+              },
+              "metrics": [
+                {
+                  "id": "1",
+                  "type": "count"
+                }
+              ],
+              "query": "support_id.keyword:$SupportID",
+              "refId": "A",
+              "timeField": "@timestamp"
+            }
+          ],
+          "title": "Signature Risk",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "indexByName": {
+                  "Count 1": 1,
+                  "Count 2": 2,
+                  "violations.keyword": 0
+                },
+                "renameByName": {
+                  "Count": "",
+                  "Count 1": "Hits",
+                  "Count 2": "Blocked",
+                  "Unique Count": "Unique Signatures",
+                  "Unique Count ip_client": "IPs",
+                  "Unique Count policy_name.keyword": "Policies",
+                  "Unique Count uri.keyword": "URLs",
+                  "details.violation.sig_data.sig_id.keyword": "Signature ID",
+                  "details.violation.viol_name.keyword": "Violations",
+                  "ip_client": "IP address",
+                  "sig_names.keyword": "Signatures",
+                  "violations.keyword": "Violations"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [],
+                "fields": {}
+              }
+            }
+          ],
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 3,
+            "x": 8,
+            "y": 1
+          },
+          "id": 73,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "sum"
+              ],
+              "fields": "/^Unique Count$/",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "8.3.3",
+          "targets": [
+            {
+              "alias": "",
+              "bucketAggs": [
+                {
+                  "field": "@version",
+                  "id": "2",
+                  "settings": {
+                    "min_doc_count": "0",
+                    "order": "desc",
+                    "orderBy": "_term",
+                    "size": "0"
+                  },
+                  "type": "terms"
+                }
+              ],
+              "datasource": {
+                "type": "elasticsearch",
+                "uid": "waf_logs"
+              },
+              "metrics": [
+                {
+                  "field": "violations.keyword",
+                  "id": "1",
+                  "type": "cardinality"
+                }
+              ],
+              "query": "support_id.keyword:$SupportID",
+              "refId": "A",
+              "timeField": "@timestamp"
+            }
+          ],
+          "title": "Violations",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 3,
+            "x": 11,
+            "y": 1
+          },
+          "id": 85,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "sum"
+              ],
+              "fields": "/^Unique Count$/",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "8.3.3",
+          "targets": [
+            {
+              "alias": "",
+              "bucketAggs": [
+                {
+                  "field": "@version",
+                  "id": "2",
+                  "settings": {
+                    "min_doc_count": "0",
+                    "order": "desc",
+                    "orderBy": "_term",
+                    "size": "0"
+                  },
+                  "type": "terms"
+                }
+              ],
+              "datasource": {
+                "type": "elasticsearch",
+                "uid": "waf_logs"
+              },
+              "metrics": [
+                {
+                  "field": "threat_campaign_names.keyword",
+                  "id": "1",
+                  "type": "cardinality"
+                }
+              ],
+              "query": "NOT threat_campaign_names:\"N/A\" && support_id.keyword:$SupportID",
+              "refId": "A",
+              "timeField": "@timestamp"
+            }
+          ],
+          "title": "Threat Campaign",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 3,
+            "x": 14,
+            "y": 1
+          },
+          "id": 86,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "sum"
+              ],
+              "fields": "/^Unique Count$/",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "8.3.3",
+          "targets": [
+            {
+              "alias": "",
+              "bucketAggs": [
+                {
+                  "field": "@version",
+                  "id": "2",
+                  "settings": {
+                    "min_doc_count": "0",
+                    "order": "desc",
+                    "orderBy": "_term",
+                    "size": "0"
+                  },
+                  "type": "terms"
+                }
+              ],
+              "datasource": {
+                "type": "elasticsearch",
+                "uid": "waf_logs"
+              },
+              "metrics": [
+                {
+                  "field": "sig_ids.keyword",
+                  "id": "1",
+                  "type": "cardinality"
+                }
+              ],
+              "query": "support_id.keyword:$SupportID",
+              "refId": "A",
+              "timeField": "@timestamp"
+            }
+          ],
+          "title": "Signatures",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 3,
+            "x": 17,
+            "y": 1
+          },
+          "id": 57,
+          "options": {
+            "displayLabels": [
+              "name",
+              "percent"
+            ],
+            "legend": {
+              "displayMode": "hidden",
+              "placement": "bottom",
+              "values": [
+                "percent"
+              ]
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.3",
+          "targets": [
+            {
+              "alias": "",
+              "bucketAggs": [
+                {
+                  "field": "signature-details.accuracy.keyword",
+                  "id": "2",
+                  "settings": {
+                    "min_doc_count": "1",
+                    "order": "desc",
+                    "orderBy": "1",
+                    "size": "15"
+                  },
+                  "type": "terms"
+                }
+              ],
+              "datasource": {
+                "type": "elasticsearch",
+                "uid": "waf_decoded"
+              },
+              "metrics": [
+                {
+                  "id": "1",
+                  "type": "count"
+                }
+              ],
+              "query": "support_id.keyword:$SupportID",
+              "refId": "A",
+              "timeField": "@timestamp"
+            }
+          ],
+          "title": "Signature Accuracy",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "indexByName": {
+                  "Count 1": 1,
+                  "Count 2": 2,
+                  "violations.keyword": 0
+                },
+                "renameByName": {
+                  "Count": "",
+                  "Count 1": "Hits",
+                  "Count 2": "Blocked",
+                  "Unique Count": "Unique Signatures",
+                  "Unique Count ip_client": "IPs",
+                  "Unique Count policy_name.keyword": "Policies",
+                  "Unique Count uri.keyword": "URLs",
+                  "details.violation.sig_data.sig_id.keyword": "Signature ID",
+                  "details.violation.viol_name.keyword": "Violations",
+                  "ip_client": "IP address",
+                  "sig_names.keyword": "Signatures",
+                  "violations.keyword": "Violations"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [],
+                "fields": {}
+              }
+            }
+          ],
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 20,
+            "y": 1
+          },
+          "id": 89,
+          "options": {
+            "displayLabels": [
+              "name",
+              "percent"
+            ],
+            "legend": {
+              "displayMode": "hidden",
+              "placement": "bottom",
+              "values": [
+                "value"
+              ]
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.3",
+          "targets": [
+            {
+              "alias": "",
+              "bucketAggs": [
+                {
+                  "field": "details.context.keyword",
+                  "id": "2",
+                  "settings": {
+                    "min_doc_count": "1",
+                    "order": "desc",
+                    "orderBy": "1",
+                    "size": "15"
+                  },
+                  "type": "terms"
+                }
+              ],
+              "datasource": {
+                "type": "elasticsearch",
+                "uid": "waf_decoded"
+              },
+              "metrics": [
+                {
+                  "id": "1",
+                  "type": "count"
+                }
+              ],
+              "query": "support_id.keyword:$SupportID",
+              "refId": "A",
+              "timeField": "@timestamp"
+            }
+          ],
+          "title": "Signature Context",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "indexByName": {
+                  "Count 1": 1,
+                  "Count 2": 2,
+                  "violations.keyword": 0
+                },
+                "renameByName": {
+                  "Count": "",
+                  "Count 1": "Hits",
+                  "Count 2": "Blocked",
+                  "Unique Count": "Unique Signatures",
+                  "Unique Count ip_client": "IPs",
+                  "Unique Count policy_name.keyword": "Policies",
+                  "Unique Count uri.keyword": "URLs",
+                  "details.violation.sig_data.sig_id.keyword": "Signature ID",
+                  "details.violation.viol_name.keyword": "Violations",
+                  "ip_client": "IP address",
+                  "sig_names.keyword": "Signatures",
+                  "violations.keyword": "Violations"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [],
+                "fields": {}
+              }
+            }
+          ],
+          "type": "piechart"
+        }
+      ],
+      "title": "Details",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 32,
+      "panels": [],
+      "title": "Main",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 279
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 7,
+        "x": 0,
+        "y": 2
+      },
+      "id": 64,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "settings": {
+                "limit": "500"
+              },
+              "type": "logs"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Overall Information",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "date_time",
+                "dest_port",
+                "host",
+                "ip_client",
+                "method",
+                "outcome",
+                "outcome_reason",
+                "protocol",
+                "request_status",
+                "response_code",
+                "severity_label",
+                "source_host",
+                "src_port",
+                "x_forwarded_for_header_value",
+                "violation_rating"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "count": true,
+              "geoip.country_code3": true,
+              "geoip.ip": true,
+              "geoip.latitude": true,
+              "geoip.location.lat": true,
+              "geoip.location.lon": true,
+              "geoip.longitude": true,
+              "highlight": true,
+              "sort": true,
+              "timestamp": true,
+              "uri": false,
+              "violation_details.request-violations.violation": true,
+              "violation_rating": false
+            },
+            "indexByName": {
+              "date_time": 0,
+              "dest_port": 6,
+              "host": 5,
+              "ip_client": 14,
+              "method": 2,
+              "outcome": 10,
+              "outcome_reason": 12,
+              "protocol": 1,
+              "request_status": 11,
+              "response_code": 7,
+              "severity_label": 8,
+              "source_host": 3,
+              "src_port": 4,
+              "violation_rating": 9,
+              "x_forwarded_for_header_value": 13
+            },
+            "renameByName": {
+              "blocking_exception_reason": "Blocking Exception",
+              "bot_anomalies": "Bot Anomalies",
+              "bot_category": "Bot Category",
+              "bot_signature_name": "Bot Signature",
+              "client_application": "Client Application",
+              "client_application_version": "Client Application Version",
+              "client_class": "Bot Class",
+              "count": "",
+              "date_time": "Date Time",
+              "dest_port": "Dst Port",
+              "enforced_bot_anomalies": "Enforced Bot Anomalies",
+              "geoip.continent_code": "Continent Code",
+              "geoip.country_code2": "Country Code",
+              "geoip.country_name": "Country Name",
+              "geoip.ip": "",
+              "geoip.timezone": "Timezone",
+              "host": "Server IP",
+              "ip_client": "Layer 3 source IP",
+              "is_truncated": "Truncated Log",
+              "logsource": "Device",
+              "method": "Method",
+              "outcome": "Outcome",
+              "outcome_reason": "Outcome Reason",
+              "policy_name": "Policy Name",
+              "protocol": "Protocol",
+              "request": "Request",
+              "request_status": "Request Status",
+              "response_code": "Response Code",
+              "severity": "Severity #",
+              "severity_label": "Severity",
+              "sig_cves": "CVEs",
+              "sig_ids": "Signature IDs",
+              "sig_names": "Signature Names",
+              "sig_set_names": "Signature Sets",
+              "sort": "",
+              "source_host": "Client IP",
+              "src_port": "Src Port",
+              "sub_violations": "Subviolations",
+              "support_id": "Support ID",
+              "threat_campaign_names": "Threat Campaigns",
+              "unit_hostname": "Device Hostname",
+              "uri": "URLs",
+              "violation_rating": "Violation Rating",
+              "violations": "Violations",
+              "vs_name": "Virtual Server Name",
+              "x_forwarded_for_header_value": "XFF"
+            }
+          }
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": [
+              "last"
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 279
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 7,
+        "x": 7,
+        "y": 2
+      },
+      "id": 67,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "settings": {
+                "limit": "500"
+              },
+              "type": "logs"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Other Details",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "bot_anomalies",
+                "bot_category",
+                "bot_signature_name",
+                "client_application",
+                "client_application_version",
+                "client_class",
+                "enforced_bot_anomalies",
+                "geoip.continent_code",
+                "geoip.country_name",
+                "is_truncated",
+                "logsource",
+                "policy_name",
+                "unit_hostname",
+                "vs_name",
+                "sig_cves"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "count": true,
+              "geoip.country_code3": true,
+              "geoip.ip": true,
+              "geoip.latitude": true,
+              "geoip.location.lat": true,
+              "geoip.location.lon": true,
+              "geoip.longitude": true,
+              "highlight": true,
+              "sort": true,
+              "timestamp": true,
+              "uri": false,
+              "violation_details.request-violations.violation": true,
+              "violation_rating": false
+            },
+            "indexByName": {
+              "bot_anomalies": 4,
+              "bot_category": 2,
+              "bot_signature_name": 3,
+              "client_application": 5,
+              "client_application_version": 6,
+              "client_class": 1,
+              "enforced_bot_anomalies": 7,
+              "geoip.continent_code": 9,
+              "geoip.country_name": 8,
+              "is_truncated": 13,
+              "logsource": 10,
+              "policy_name": 0,
+              "unit_hostname": 11,
+              "vs_name": 12
+            },
+            "renameByName": {
+              "blocking_exception_reason": "Blocking Exception",
+              "bot_anomalies": "Bot Anomalies",
+              "bot_category": "Bot Category",
+              "bot_signature_name": "Bot Signature",
+              "client_application": "Application",
+              "client_application_version": "Application Version",
+              "client_class": "Bot Class",
+              "count": "",
+              "date_time": "Date Time",
+              "dest_port": "Dst Port",
+              "enforced_bot_anomalies": "Enforced Bot Anomalies",
+              "geoip.continent_code": "Continent Code",
+              "geoip.country_code2": "Country Code",
+              "geoip.country_name": "Country Name",
+              "geoip.ip": "",
+              "geoip.timezone": "Timezone",
+              "host": "Server IP",
+              "ip_client": "Client IP",
+              "is_truncated": "Truncated Log",
+              "logsource": "NAP Device",
+              "method": "Method",
+              "outcome": "Outcome",
+              "outcome_reason": "Outcome Reason",
+              "policy_name": "Policy Name",
+              "protocol": "Protocol",
+              "request": "Request",
+              "request_status": "Request Status",
+              "response_code": "Response Code",
+              "severity": "Severity #",
+              "severity_label": "Severity",
+              "sig_cves": "CVEs",
+              "sig_ids": "Signature IDs",
+              "sig_names": "Signature Names",
+              "sig_set_names": "Signature Sets",
+              "sort": "",
+              "source_host": "Actual IP",
+              "src_port": "Src Port",
+              "sub_violations": "Subviolations",
+              "support_id": "Support ID",
+              "threat_campaign_names": "Threat Campaigns",
+              "unit_hostname": "Device Hostname",
+              "uri": "URLs",
+              "violation_rating": "Violation Rating",
+              "violations": "Violations",
+              "vs_name": "Virtual Server Name",
+              "x_forwarded_for_header_value": "XFF"
+            }
+          }
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": [
+              "last"
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "color-background-solid",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 10,
+        "x": 14,
+        "y": 2
+      },
+      "id": 68,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": false,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "sig_set_names.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Signature Sets",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "sig_set_names.keyword"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "left",
+            "displayMode": "color-text",
+            "filterable": false,
+            "width": 0
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "sig_ids.keyword"
+            },
+            "properties": [
+              {
+                "id": "unit"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 4,
+        "x": 14,
+        "y": 8
+      },
+      "id": 72,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": false,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "violations.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Violation List",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "violations.keyword"
+              ]
+            }
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "destinationType": "string",
+                "targetField": "sig_ids.keyword"
+              }
+            ],
+            "fields": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "left",
+            "displayMode": "color-text",
+            "filterable": false,
+            "width": 0
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "sig_ids.keyword"
+            },
+            "properties": [
+              {
+                "id": "unit"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 6,
+        "x": 18,
+        "y": 8
+      },
+      "id": 80,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": false,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "sub_violations.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Violation List",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "sub_violations.keyword"
+              ]
+            }
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "destinationType": "string",
+                "targetField": "sig_ids.keyword"
+              }
+            ],
+            "fields": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "json-view",
+            "filterable": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 279
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 79,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "settings": {
+                "limit": "500"
+              },
+              "type": "logs"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "URL & Request Details",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "request",
+                "uri",
+                "threat_campaign_names"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "count": true,
+              "geoip.country_code3": true,
+              "geoip.ip": true,
+              "geoip.latitude": true,
+              "geoip.location.lat": true,
+              "geoip.location.lon": true,
+              "geoip.longitude": true,
+              "highlight": true,
+              "sort": true,
+              "timestamp": true,
+              "uri": false,
+              "violation_details.request-violations.violation": true,
+              "violation_rating": false
+            },
+            "indexByName": {
+              "request": 0,
+              "uri": 1
+            },
+            "renameByName": {
+              "blocking_exception_reason": "Blocking Exception",
+              "bot_anomalies": "Bot Anomalies",
+              "bot_category": "Bot Category",
+              "bot_signature_name": "Bot Signature",
+              "client_application": "Client Application",
+              "client_application_version": "Client Application Version",
+              "client_class": "Bot Class",
+              "count": "",
+              "date_time": "Date Time",
+              "dest_port": "Dst Port",
+              "enforced_bot_anomalies": "Enforced Bot Anomalies",
+              "geoip.continent_code": "Continent Code",
+              "geoip.country_code2": "Country Code",
+              "geoip.country_name": "Country Name",
+              "geoip.ip": "",
+              "geoip.timezone": "Timezone",
+              "host": "Server IP",
+              "ip_client": "Client IP",
+              "is_truncated": "Truncated Log",
+              "logsource": "Device",
+              "method": "Method",
+              "outcome": "Outcome",
+              "outcome_reason": "Outcome Reason",
+              "policy_name": "Policy Name",
+              "protocol": "Protocol",
+              "request": "Request",
+              "request_status": "Request Status",
+              "response_code": "Response Code",
+              "severity": "Severity #",
+              "severity_label": "Severity",
+              "sig_cves": "CVEs",
+              "sig_ids": "Signature IDs",
+              "sig_names": "Signature Names",
+              "sig_set_names": "Signature Sets",
+              "sort": "",
+              "source_host": "Actual IP",
+              "src_port": "Src Port",
+              "sub_violations": "Subviolations",
+              "support_id": "Support ID",
+              "threat_campaign_names": "Threat Campaigns",
+              "unit_hostname": "Device Hostname",
+              "uri": "URLs",
+              "violation_rating": "Violation Rating",
+              "violations": "Violations",
+              "vs_name": "Virtual Server Name",
+              "x_forwarded_for_header_value": "XFF"
+            }
+          }
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": [
+              "last"
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "id": 88,
+      "panels": [],
+      "title": "Signatures",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_decoded"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 92
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Signature ID"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              },
+              {
+                "id": "unit"
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background-solid"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Accuracy"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 92
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Risk"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 72
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 0,
+        "y": 22
+      },
+      "id": 28,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "signature-details.name.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "signature-details.sig_id",
+              "id": "6",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "1"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "signature-details.accuracy.keyword",
+              "id": "7",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "signature-details.risk.keyword",
+              "id": "8",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Signature Names",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Count": true
+            },
+            "indexByName": {
+              "Count": 4,
+              "Unique Count policy_name.keyword": 7,
+              "Unique Count source_host": 5,
+              "Unique Count uri.keyword": 6,
+              "signature-details.accuracy.keyword": 2,
+              "signature-details.name.keyword": 0,
+              "signature-details.risk.keyword": 3,
+              "signature-details.sig_id": 1
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "details.parameter_data.name.keyword": "Parameter Name",
+              "details.parameter_data.value.keyword": "Most Common Value",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "signature-details.accuracy.keyword": "Accuracy",
+              "signature-details.name.keyword": "Signature Name",
+              "signature-details.risk.keyword": "Risk",
+              "signature-details.sig_id": "Signature ID",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_decoded"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 7,
+        "x": 10,
+        "y": 22
+      },
+      "id": 81,
+      "options": {
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single"
+        },
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "8.3.3",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "details.context.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "15"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Signature Context",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "Unique Signatures",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count uri.keyword": "URLs",
+              "details.context.keyword": "Context",
+              "details.violation.sig_data.sig_id.keyword": "Signature ID",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [],
+            "fields": {}
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_decoded"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Signatures"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 556
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background-solid"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Parameter Name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 158
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 7,
+        "x": 17,
+        "y": 22
+      },
+      "id": 6,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "details.parameter_data.name.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "details.parameter_data.value.keyword",
+              "id": "6",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "1"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Parameter Names",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Count": true
+            },
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "details.parameter_data.name.keyword": "Parameter Name",
+              "details.parameter_data.value.keyword": "Value",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_decoded"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Most Common Value"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background-solid"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 7,
+        "x": 10,
+        "y": 28
+      },
+      "id": 41,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "details.header.header_name.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "details.header.header_value.keyword",
+              "id": "6",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "1"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Header Names",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "details.header.header_name.keyword": "Header Name",
+              "details.header.header_value.keyword": "Most Common Value",
+              "details.parameter_data.name.keyword": "Parameter Name",
+              "details.parameter_data.value.keyword": "Most Common Value",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_decoded"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Most Common Value"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background-solid"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 7,
+        "x": 17,
+        "y": 28
+      },
+      "id": 44,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "details.cookie.cookie_name.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "details.cookie.cookie_value.keyword",
+              "id": "6",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "1"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Cookie Names",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Count": true
+            },
+            "indexByName": {
+              "Count 1": 1,
+              "Count 2": 2,
+              "violations.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "details.cookie.cookie_name.keyword": "Cookie Name",
+              "details.cookie.cookie_value.keyword": "Most Common Value",
+              "details.header.header_name.keyword": "Header Name",
+              "details.header.header_value.keyword": "Most Common Value",
+              "details.parameter_data.name.keyword": "Parameter Name",
+              "details.parameter_data.value.keyword": "Most Common Value",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_decoded"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Violations"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 285
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 114
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Signatures"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 556
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "details.violation.parameter_data.name.keyword"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 362
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "details.violation.parameter_data.value.keyword"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 251
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Parameters"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 11,
+        "x": 0,
+        "y": 33
+      },
+      "id": 39,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "details.sig_data.kw_data.buffer.keyword",
+              "id": "6",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "details.context.keyword:url && support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "URL Context",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Count": true
+            },
+            "indexByName": {
+              "Count": 1,
+              "Unique Count policy_name.keyword": 3,
+              "Unique Count source_host": 4,
+              "Unique Count uri.keyword": 2,
+              "details.sig_data.kw_data.buffer.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count details.parameter_data.name.keyword": "Parameters",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "details.parameter_data.name.keyword": "Parameter Name",
+              "details.parameter_data.value.keyword": "Parameter Value",
+              "details.sig_data.kw_data.buffer.keyword": "URL Keyword Detected",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_decoded"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Violations"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 285
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 114
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Signatures"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 556
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "URLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policies"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "details.violation.parameter_data.name.keyword"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 362
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "details.violation.parameter_data.value.keyword"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 251
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Parameters"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 11,
+        "y": 33
+      },
+      "id": 60,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "field": "details.sig_data.kw_data.buffer.keyword",
+              "id": "6",
+              "settings": {
+                "min_doc_count": "1",
+                "order": "desc",
+                "orderBy": "1",
+                "size": "100"
+              },
+              "type": "terms"
+            }
+          ],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "details.context.keyword:request && support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Request Context",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Count": true
+            },
+            "indexByName": {
+              "Count": 1,
+              "Unique Count policy_name.keyword": 3,
+              "Unique Count source_host": 4,
+              "Unique Count uri.keyword": 2,
+              "details.sig_data.kw_data.buffer.keyword": 0
+            },
+            "renameByName": {
+              "Count": "Hits",
+              "Count 1": "Hits",
+              "Count 2": "Blocked",
+              "Unique Count": "IPs",
+              "Unique Count details.parameter_data.name.keyword": "Parameters",
+              "Unique Count ip_client": "IPs",
+              "Unique Count policy_name.keyword": "Policies",
+              "Unique Count source_host": "IPs",
+              "Unique Count uri.keyword": "URLs",
+              "details.parameter_data.name.keyword": "Parameter Name",
+              "details.parameter_data.value.keyword": "Parameter Value",
+              "details.sig_data.kw_data.buffer.keyword": "Keyword Detected",
+              "details.violation.viol_name.keyword": "Violations",
+              "ip_client": "IP address",
+              "sig_names.keyword": "Signatures",
+              "violations.keyword": "Violations"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "id": 59,
+      "panels": [],
+      "title": "Log Details",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_logs"
+      },
+      "gridPos": {
+        "h": 25,
+        "w": 12,
+        "x": 0,
+        "y": 42
+      },
+      "id": 83,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": false,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_logs"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "settings": {
+                "limit": "500"
+              },
+              "type": "logs"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Original Index",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "type": "elasticsearch",
+        "uid": "waf_decoded"
+      },
+      "gridPos": {
+        "h": 25,
+        "w": 12,
+        "x": 12,
+        "y": 42
+      },
+      "id": 84,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": false,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [],
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "waf_decoded"
+          },
+          "metrics": [
+            {
+              "id": "1",
+              "settings": {
+                "limit": "500"
+              },
+              "type": "logs"
+            }
+          ],
+          "query": "support_id.keyword:$SupportID",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "title": "Decoded Index",
+      "type": "logs"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 34,
+  "style": "dark",
+  "tags": [
+    "nginx",
+    "nap"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": {
+          "type": "elasticsearch",
+          "uid": "waf_decoded"
+        },
+        "definition": "{\"find\": \"terms\", \"field\": \"support_id.keyword\", \"size\": 1000}",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "SupportID",
+        "options": [],
+        "query": "{\"find\": \"terms\", \"field\": \"support_id.keyword\", \"size\": 1000}",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "datasource": {
+          "type": "elasticsearch",
+          "uid": "AED4mLQnz"
+        },
+        "filters": [],
+        "hide": 0,
+        "name": "Filters",
+        "skipUrlSync": false,
+        "type": "adhoc"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6M",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "NGINX NAP SupportID",
+  "uid": "nap-supportid",
+  "version": 5,
+  "weekStart": "",
+  "gnetId": 15676,
+  "description": "This Dashboard provides more visibility into a single incident logged by NGINX App Protect. This is part of a series of NGINX App Protect Dashboards"
+}
